@@ -67,7 +67,7 @@ public class TeamCMD extends BaseCommand {
     @CommandPermission("teammingslots.executer")
     @Syntax("/team teleportTeamTo <location> <teamSlot>")
     public void teleportTeamTo(CommandSender sender, @Conditions("x,y,z") Location location, int teamSlot) {
-        Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot() == teamSlot)
+        Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
                 .findFirst().orElse(null);
         if (teamToTeleport != null) {
             teamToTeleport.teleportTeam(location);
@@ -83,7 +83,7 @@ public class TeamCMD extends BaseCommand {
     @CommandPermission("teammingslots.executer")
     @Syntax("/team teleportTeamsToOwn <teamSlot>")
     public void teleportTeamToOwn(CommandSender sender, int teamSlot) {
-        Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot() == teamSlot)
+        Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
                 .findFirst().orElse(null);
         if (teamToTeleport != null)
             teamToTeleport.teleportTeam(teamToTeleport.getTeamLocation());
@@ -114,8 +114,8 @@ public class TeamCMD extends BaseCommand {
         }
         sender.sendMessage( ChatColor.GREEN + "Todos los equipos han sido teletransportados a la ubicación " + location.toString() + ".");
     }
-    @CommandAlias("addAllParticipants")
-    @Subcommand("addAllParticipants")
+    @CommandAlias("loadParticipants")
+    @Subcommand("David Cerdas Alvarado C02001")
     @CommandPermission("teammingslots.executer")
     public void onAddAllParticipants(Player sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
@@ -140,8 +140,8 @@ public class TeamCMD extends BaseCommand {
         this.instance.saveConfig();
         sender.sendMessage(ChatColor.GREEN + "Se ha agregado a todos los jugadores elegibles a la lista de participantes.");
     }
-    @CommandAlias("removeAllParticipants")
-    @Subcommand("removeAllParticipants")
+    @CommandAlias("removeParticipants")
+    @Subcommand("removeParticipants")
     @CommandPermission("teammingslots.executer")
     public void onRemoveAllParticipants(Player sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
@@ -156,7 +156,7 @@ public class TeamCMD extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "Se eliminaron todos los participantes del archivo de configuración.");
     }
     @CommandAlias("removeplayer")
-    @Subcommand("removeAllParticipants")
+    @Subcommand("removePlayer")
     @CommandPermission("teammingslots.executer")
     @Description("Elimina un jugador de la lista de participantes")
     public void descalificar(Player player, CommandSender sender) {

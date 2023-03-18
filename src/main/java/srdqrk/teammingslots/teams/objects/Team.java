@@ -12,10 +12,9 @@ public class Team {
 
     List<Player> players;
     Location teamLocation;
-    int slot;
-    public Team(List<Player> players, Location location, int slot) {
+    Slot slot;
+    public Team(List<Player> players, Slot slot) {
         this.players = players;
-        this.teamLocation = location;
         this.slot = slot;
     }
 
