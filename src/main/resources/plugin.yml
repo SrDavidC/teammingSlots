@@ -1,0 +1,4 @@
+name: TeammingSlots
+version: '${version}'
+main: srdqrk.teammingslots.TeammingSlots
+api-version: 1.19
