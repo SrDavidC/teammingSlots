@@ -27,16 +27,33 @@ public class TeamManager {
     final public int Z_HOLE_MEASURE = 6;
     final public int X_HOLE_MEASURE = 10;
 
-    FileConfiguration config = instance.getConfig();
+    final public int MAX_SLOTS = 60;
+    FileConfiguration config;
     Location startCorner;
+    private List<String> hoyos;
+
     public TeamManager(TeammingSlots instance) {
         this.teams = new ArrayList<>();
         this.instance = instance;
         this.slots = new ArrayList<>();
+        this.config = instance.getConfig();
+        this.hoyos = new ArrayList<>();
+        hoyos.add("hoyo_1");
+        hoyos.add("hoyo_2");
+        hoyos.add("hoyo_3");
+        createSlots(MAX_SLOTS);
     }
     public void createTeams(int maxPlayersPerTeam) {
         this.deleteTeams();
-        List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+
+        List<String> participantes = config.getStringList("participantes");
+        List<Player> onlinePlayers = new ArrayList<>();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (participantes.contains(player.getName())) {
+                onlinePlayers.add(player);
+            }
+        }
         Collections.shuffle(onlinePlayers); // Shuffle players to randomize team assignment
         int numTeams = (int) Math.ceil((double) onlinePlayers.size() / maxPlayersPerTeam); // Calculate number of teams needed
         int playerIndex = 0;
@@ -51,16 +68,23 @@ public class TeamManager {
     }
 
 
-    public void createSlots(int maxSlots, Location startCroner) {
+    public void createSlots(int maxSlots) {
+        int hoyo_index = 0;
+        Location startCroner = loadStartCorner(this.hoyos.get(hoyo_index));
         for (int slotCounter = 0; slotCounter <= maxSlots ; slotCounter++) {
-            this.slots.add(new Slot(startCroner, slotCounter,(startCroner.getBlockY() + (10 * slotCounter))));
+            this.slots.add(new Slot(startCroner, slotCounter,(startCroner.getBlockY() + (Y_MEASURE * slotCounter))));
+            if (slotCounter % 20 == 0) {
+                hoyo_index++;
+                startCroner = loadStartCorner(this.hoyos.get(hoyo_index));
+            }
+
         }
     }
-    public Location loadStartCorner() {
-        double x = config.getDouble("myLocation.x");
-        double y = config.getDouble("myLocation.y");
-        double z = config.getDouble("myLocation.z");
-        String worldName = config.getString("myLocation.world");
+    public Location loadStartCorner(String hoyo_name) {
+        double x = config.getDouble( hoyo_name+".x");
+        double y = config.getDouble(hoyo_name+"y");
+        double z = config.getDouble(hoyo_name+".z");
+        String worldName = config.getString(hoyo_name+".world");
         World world = Bukkit.getWorld(worldName);
         return new Location(world, x, y, z);
     }
