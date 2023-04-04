@@ -115,7 +115,7 @@ public class TeamCMD extends BaseCommand {
         sender.sendMessage( ChatColor.GREEN + "Todos los equipos han sido teletransportados a la ubicación " + location.toString() + ".");
     }
     @CommandAlias("loadParticipants")
-    @Subcommand("David Cerdas Alvarado C02001")
+    @Subcommand("loadParticipants")
     @CommandPermission("teammingslots.executer")
     public void onAddAllParticipants(Player sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
@@ -170,6 +170,11 @@ public class TeamCMD extends BaseCommand {
         this.config.set("participantes", participantes);
         this.instance.saveConfig();
 
+        for (Player staffPlayer : Bukkit.getOnlinePlayers()) {
+            if (staffPlayer.hasPermission("teammingslots.executer")) {
+                staffPlayer.sendMessage(ChatColor.YELLOW + "[INFO]" + ChatColor.RED + " El jugador " + player.getName() + " ha sido eliminado.");
+            }
+        }
         sender.sendMessage(ChatColor.GREEN + "Se ha eliminado al jugador " + player.getName() + " de la lista de participantes.");
     }
     @CommandAlias("teamsview")
