@@ -5,4 +5,4 @@ api-version: 1.19
 permissions:
   teammingslots.executer:
     description: Permiso para ejecutar comandos. Permiso solo para staffs
-    default: false
+    default: op

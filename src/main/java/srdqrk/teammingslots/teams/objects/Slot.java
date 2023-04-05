@@ -23,12 +23,21 @@ public class Slot {
         this.finishCorner = new Location(startCorner.getWorld(), startCorner.getX() + X_MEASURE, startCorner.getY()
                 , startCorner.getZ() + Z_HOLE_MEASURE);
         this.number = number;
-        int spawnX = startCorner.getBlockX() + (X_MEASURE/2);
-        int spawnZ = startCorner.getBlockZ() + (Z_MEASURE/2);
+        int spawnX = startCorner.getBlockX()/2;
+        int spawnZ = startCorner.getBlockZ()/2;
         int spawnY = layerY;
         this.spawnLocation = new Location(startCorner.getWorld(), spawnX, spawnY, spawnZ);
     }
 
+
+    @Override
+    public String toString() {
+        String string = "";
+        string += "Numero: " + number
+                + "\n Start Corner: " + this.startCorner
+                + "\n SpawnLocation: " + this.spawnLocation;
+        return string;
+    }
 
 
 

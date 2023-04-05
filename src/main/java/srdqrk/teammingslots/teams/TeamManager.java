@@ -47,6 +47,7 @@ public class TeamManager {
         this.deleteTeams();
 
         List<String> participantes = config.getStringList("participantes");
+        // Players that are online and are in "participantes"
         List<Player> onlinePlayers = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -71,18 +72,21 @@ public class TeamManager {
     public void createSlots(int maxSlots) {
         int hoyo_index = 0;
         Location startCroner = loadStartCorner(this.hoyos.get(hoyo_index));
-        for (int slotCounter = 0; slotCounter <= maxSlots ; slotCounter++) {
-            this.slots.add(new Slot(startCroner, slotCounter,(startCroner.getBlockY() + (Y_MEASURE * slotCounter))));
-            if (slotCounter % 20 == 0) {
+        System.out.println(startCroner + "\n\n");
+        for (int slotCounter = 1; slotCounter < maxSlots ; slotCounter++) {
+            Slot newSlot = new Slot(startCroner, slotCounter,(startCroner.getBlockY() - (Y_MEASURE * slotCounter)));
+            this.slots.add(newSlot);
+            /*
+            if (slotCounter % 20 == 0 && hoyo_index < 2) {
                 hoyo_index++;
                 startCroner = loadStartCorner(this.hoyos.get(hoyo_index));
             }
-
+            */
         }
     }
     public Location loadStartCorner(String hoyo_name) {
         double x = config.getDouble( hoyo_name+".x");
-        double y = config.getDouble(hoyo_name+"y");
+        double y = config.getDouble(hoyo_name+".y");
         double z = config.getDouble(hoyo_name+".z");
         String worldName = config.getString(hoyo_name+".world");
         World world = Bukkit.getWorld(worldName);

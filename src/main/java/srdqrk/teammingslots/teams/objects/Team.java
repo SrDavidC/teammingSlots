@@ -16,6 +16,7 @@ public class Team {
     public Team(List<Player> players, Slot slot) {
         this.players = players;
         this.slot = slot;
+        this.teamLocation = slot.getSpawnLocation();
     }
 
     public void teleportTeam(Location location) {
@@ -30,7 +31,7 @@ public class Team {
 
     public String getInfo() {
         String info = "";
-        info += ChatColor.YELLOW + "Slot #" + this.slot;
+        info += ChatColor.YELLOW + "Slot #" + this.slot.getNumber();
         info += "\n" + ChatColor.GREEN;
         for (Player p: this.players) {
             info += p.getName() + ",";

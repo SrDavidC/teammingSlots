@@ -33,7 +33,6 @@ public class TeamCMD extends BaseCommand {
     @Syntax("/team createTeams <maxPlayersPerTeam>")
     public void createTeams(CommandSender sender, Integer maxPlayersPerTeam) {
         try {
-
             this.teamManager.createTeams(maxPlayersPerTeam);
             sender.sendMessage(ChatColor.GREEN + "Todos los equipos han sido creados."
             + "\nTotalidad de equipos: " + ChatColor.YELLOW + this.teamManager.getTeams().size()
@@ -183,10 +182,15 @@ public class TeamCMD extends BaseCommand {
     @Description("Observar la conformacion de equipos")
     public void onTeamsView(CommandSender sender) {
         String teamsView = "";
-        for (Team team : this.teamManager.getTeams()) {
-            teamsView += team.getInfo();
-            teamsView += "\n";
+        if (this.teamManager.getTeams().isEmpty()) {
+            teamsView = ChatColor.RED + "La lista de equipos está vacía";
+        } else {
+            for (Team team : this.teamManager.getTeams()) {
+                teamsView += team.getInfo();
+                teamsView += "\n";
+            }
         }
+
         sender.sendMessage(teamsView);
     }
 
