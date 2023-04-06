@@ -63,6 +63,8 @@ public final class TeammingSlots extends JavaPlugin {
         config.addDefault("hoyo_2.world", "world");
         config.addDefault("hoyo_3.world", "world");
 
+
+        config.addDefault("noParticipantes", new ArrayList<>());
         config.options().copyDefaults(true);
         saveConfig();
     }

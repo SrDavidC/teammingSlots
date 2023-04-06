@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -127,10 +126,13 @@ public class TeamCMD extends BaseCommand {
         if (!config.contains("participantes")) {
             config.set("participantes", new ArrayList<String>());
         }
+        if (!config.contains("noParticipantes")) {
+            config.set("noParticipantes", new ArrayList<String>());
+        }
         List<String> participants = config.getStringList("participantes");
-
+        List<String> noParticipantes = config.getStringList("noParticipantes");
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getGameMode() == GameMode.SPECTATOR || participants.contains(player.getName())) {
+            if ( noParticipantes.contains(player.getName()) || participants.contains(player.getName())) {
                 continue;
             }
 
@@ -167,12 +169,20 @@ public class TeamCMD extends BaseCommand {
             sender.sendMessage(ChatColor.RED + "El jugador " + player.getName() + " no se encuentra en la lista de participantes.");
             return;
         }
-
+        // If there not exist 'noParticipantes' list, so create it
+        if (!config.contains("noParticipantes")) {
+            config.set("noParticipantes", new ArrayList<String>());
+        }
+        // Delete from participantes and add to noParticipantes
         List<String> participantes = this.config.getStringList("participantes");
+        List<String> noParticipantes = this.config.getStringList("noParticipantes");
         participantes.remove(player.getName());
+        noParticipantes.add(player.getName());
         this.config.set("participantes", participantes);
+        this.config.set("noParticipantes", participantes);
+        // save config
         this.instance.saveConfig();
-
+        // Broadcast to all staffs
         for (Player staffPlayer : Bukkit.getOnlinePlayers()) {
             if (staffPlayer.hasPermission("teammingslots.executer")) {
                 staffPlayer.sendMessage(ChatColor.YELLOW + "[INFO]" + ChatColor.RED + " El jugador " + player.getName() + " ha sido eliminado.");
@@ -194,7 +204,6 @@ public class TeamCMD extends BaseCommand {
                 teamsView += "\n";
             }
         }
-
         sender.sendMessage(teamsView);
     }
 

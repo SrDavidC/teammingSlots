@@ -72,7 +72,6 @@ public class TeamManager {
     public void createSlots(int maxSlots) {
         int hoyo_index = 0;
         Location startCroner = loadStartCorner(this.hoyos.get(hoyo_index));
-        System.out.println(startCroner + "\n\n");
         for (int slotCounter = 1; slotCounter < maxSlots ; slotCounter++) {
             Slot newSlot = new Slot(startCroner, slotCounter,(startCroner.getBlockY() - (Y_MEASURE * slotCounter)));
             this.slots.add(newSlot);
