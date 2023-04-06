@@ -29,9 +29,10 @@ public class TeamCMD extends BaseCommand {
     }
     @CommandAlias("createTeams")
     @Subcommand("createTeams")
+    @CommandCompletion("@range:1-10")
     @CommandPermission("teammingslots.executer")
     @Syntax("/team createTeams <maxPlayersPerTeam>")
-    public void createTeams(CommandSender sender, Integer maxPlayersPerTeam) {
+    public void createTeams(CommandSender sender,  @Values("@range:1-10")Integer maxPlayersPerTeam) {
         try {
             this.teamManager.createTeams(maxPlayersPerTeam);
             sender.sendMessage(ChatColor.GREEN + "Todos los equipos han sido creados."
@@ -61,11 +62,12 @@ public class TeamCMD extends BaseCommand {
 
 
     }
+    @CommandCompletion("@range:1-60")
     @CommandAlias("teleportTeamTo")
     @Subcommand("teleportTeamTo")
     @CommandPermission("teammingslots.executer")
     @Syntax("/team teleportTeamTo <location> <teamSlot>")
-    public void teleportTeamTo(CommandSender sender, @Conditions("x,y,z") Location location, int teamSlot) {
+    public void teleportTeamTo(CommandSender sender, @Conditions("x,y,z") Location location, @Values("@range:1-60") int teamSlot) {
         Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
                 .findFirst().orElse(null);
         if (teamToTeleport != null) {
@@ -77,11 +79,12 @@ public class TeamCMD extends BaseCommand {
             sender.sendMessage(ChatColor.RED + "[!] El team con el slot " + teamSlot + " no fue encontrado. Intente un "
             + "un slot menor");
     }
+    @CommandCompletion("@range:1-60")
     @CommandAlias("teleportTeamToOwn")
     @Subcommand("teleportTeamToOwn")
     @CommandPermission("teammingslots.executer")
-    @Syntax("/team teleportTeamsToOwn <teamSlot>")
-    public void teleportTeamToOwn(CommandSender sender, int teamSlot) {
+    @Syntax("/team teleportTeamToOwn <teamSlot>")
+    public void teleportTeamToOwn(CommandSender sender, @Values("@range:1-60") int teamSlot) {
         Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
                 .findFirst().orElse(null);
         if (teamToTeleport != null)
@@ -155,10 +158,11 @@ public class TeamCMD extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "Se eliminaron todos los participantes del archivo de configuración.");
     }
     @CommandAlias("removeplayer")
+    @CommandCompletion("@participants")
     @Subcommand("removePlayer")
     @CommandPermission("teammingslots.executer")
     @Description("Elimina un jugador de la lista de participantes")
-    public void descalificar(Player player, CommandSender sender) {
+    public void descalificar(CommandSender sender, @Values("@participants") Player player) {
         if (this.config.getList("participantes") != null && this.config.getList("participantes").contains(player.getName())) {
             sender.sendMessage(ChatColor.RED + "El jugador " + player.getName() + " no se encuentra en la lista de participantes.");
             return;
