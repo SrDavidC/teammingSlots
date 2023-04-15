@@ -20,24 +20,26 @@ public class TeamCMD extends BaseCommand {
     private final TeammingSlots instance;
     private final TeamManager teamManager;
     private final FileConfiguration config;
+
     public TeamCMD(TeammingSlots instance) {
         this.instance = instance;
         this.config = instance.getConfig();
         this.teamManager = this.instance.getTeamManager();
 
     }
+
     @CommandAlias("createTeams")
     @Subcommand("createTeams")
     @CommandCompletion("@range:1-10")
     @CommandPermission("teammingslots.executer")
     @Syntax("/team createTeams <maxPlayersPerTeam>")
-    public void createTeams(CommandSender sender,  @Values("@range:1-10")Integer maxPlayersPerTeam) {
+    public void createTeams(CommandSender sender, @Values("@range:1-10") Integer maxPlayersPerTeam) {
         try {
             this.teamManager.createTeams(maxPlayersPerTeam);
             sender.sendMessage(ChatColor.GREEN + "Todos los equipos han sido creados."
-            + "\nTotalidad de equipos: " + ChatColor.YELLOW + this.teamManager.getTeams().size()
-            + ChatColor.GREEN + "\nCantidad máxima de jugadores por equipo: " +  ChatColor.YELLOW + maxPlayersPerTeam
-            + ChatColor.DARK_GREEN + "\nRecuerda que puedes ver los equipos usando el comando /teamsview");
+                    + "\nTotalidad de equipos: " + ChatColor.YELLOW + this.teamManager.getTeams().size()
+                    + ChatColor.GREEN + "\nCantidad máxima de jugadores por equipo: " + ChatColor.YELLOW + maxPlayersPerTeam
+                    + ChatColor.DARK_GREEN + "\nRecuerda que puedes ver los equipos usando el comando /teamsview");
         } catch (Exception e) {
             System.out.println(e);
             sender.sendMessage(ChatColor.RED + "Error. Los equipos no pudieron ser creados, consulte la consola para " +
@@ -45,6 +47,7 @@ public class TeamCMD extends BaseCommand {
         }
 
     }
+
     @CommandAlias("deleteTeams")
     @Subcommand("deleteTeams")
     @CommandPermission("teammingslots.executer")
@@ -61,66 +64,12 @@ public class TeamCMD extends BaseCommand {
 
 
     }
-    @CommandCompletion("@range:1-60")
-    @CommandAlias("teleportTeamTo")
-    @Subcommand("teleportTeamTo")
-    @CommandPermission("teammingslots.executer")
-    @Syntax("/team teleportTeamTo <location> <teamSlot>")
-    public void teleportTeamTo(CommandSender sender, @Conditions("x,y,z") Location location, @Values("@range:1-60") int teamSlot) {
-        Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
-                .findFirst().orElse(null);
-        if (teamToTeleport != null) {
-            teamToTeleport.teleportTeam(location);
-            sender.sendMessage(ChatColor.GREEN +  "El equipo con el slot " + teamSlot + " ha sido teletransportado"
-            + " correctamente a la ubicación " + location.toString());
-        }
-        else
-            sender.sendMessage(ChatColor.RED + "[!] El team con el slot " + teamSlot + " no fue encontrado. Intente un "
-            + "un slot menor");
-    }
-    @CommandCompletion("@range:1-60")
-    @CommandAlias("teleportTeamToOwn")
-    @Subcommand("teleportTeamToOwn")
-    @CommandPermission("teammingslots.executer")
-    @Syntax("/team teleportTeamToOwn <teamSlot>")
-    public void teleportTeamToOwn(CommandSender sender, @Values("@range:1-60") int teamSlot) {
-        Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
-                .findFirst().orElse(null);
-        if (teamToTeleport != null)
-            teamToTeleport.teleportTeam(teamToTeleport.getTeamLocation());
-        else
-            sender.sendMessage(ChatColor.RED + "[!] El team con el slot " + teamSlot + " no fue encontrado. Intente un "
-                    + "un slot menor");
-    }
-    @CommandAlias("teleportAllTeamsToOwn")
-    @Subcommand("teleportAllTeamsToOwn")
-    @CommandPermission("teammingslots.executer")
-    @Syntax("/team teleportAllTeamsToOwn")
-    public void teleportAllTeamsToOwn(CommandSender sender) {
-        for (Team team: this.teamManager.getTeams()
-             ) {
-            team.teleportTeamToOwnLocation();
-        }
-        sender.sendMessage(ChatColor.GREEN +  "Todos los equipos han sido teletransportados a su ubicación de equipo.");
-    }
-    @CommandAlias("teleportAllTeamsTo")
-    @Subcommand("teleportAllTeamsTo")
-    @CommandPermission("teammingslots.executer")
-    @Syntax("/team teleportAllTeamsTo <x,y,z>")
-    public void teleportAllTeamsTo(Player sender, @Conditions("x,y,z") Location location) {
-        for (Team team : teamManager.getTeams()) {
-            for (Player player : team.getPlayers()) {
-                player.teleport(location);
-            }
-        }
-        sender.sendMessage( ChatColor.GREEN + "Todos los equipos han sido teletransportados a la ubicación " + location.toString() + ".");
-    }
     @CommandAlias("loadParticipants")
     @Subcommand("loadParticipants")
     @CommandPermission("teammingslots.executer")
     public void onAddAllParticipants(Player sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
-            sender.sendMessage(ChatColor.RED +  "No tienes permiso para ejecutar este comando.");
+            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando.");
             return;
         }
         if (!config.contains("participantes")) {
@@ -132,24 +81,25 @@ public class TeamCMD extends BaseCommand {
         List<String> participants = config.getStringList("participantes");
         List<String> noParticipantes = config.getStringList("noParticipantes");
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if ( noParticipantes.contains(player.getName()) || participants.contains(player.getName())) {
+            if (noParticipantes.contains(player.getName()) || participants.contains(player.getName())) {
                 continue;
             }
 
             participants.add(player.getName());
-            sender.sendMessage(ChatColor.GREEN +  "Se ha agregado a " + player.getName() + " a la lista de participantes.");
+            sender.sendMessage(ChatColor.GREEN + "Se ha agregado a " + player.getName() + " a la lista de participantes.");
         }
 
         config.set("participantes", participants);
         this.instance.saveConfig();
         sender.sendMessage(ChatColor.GREEN + "Se ha agregado a todos los jugadores elegibles a la lista de participantes.");
     }
+
     @CommandAlias("removeParticipants")
     @Subcommand("removeParticipants")
     @CommandPermission("teammingslots.executer")
     public void onRemoveAllParticipants(Player sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
-            sender.sendMessage(ChatColor.RED +  "No tienes permiso para ejecutar este comando.");
+            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando.");
             return;
         }
         if (!config.contains("participantes")) {
@@ -159,6 +109,7 @@ public class TeamCMD extends BaseCommand {
         this.instance.saveConfig();
         sender.sendMessage(ChatColor.GREEN + "Se eliminaron todos los participantes del archivo de configuración.");
     }
+
     @CommandAlias("removeplayer")
     @CommandCompletion("@participants")
     @Subcommand("removePlayer")
@@ -190,6 +141,7 @@ public class TeamCMD extends BaseCommand {
         }
         sender.sendMessage(ChatColor.GREEN + "Se ha eliminado al jugador " + player.getName() + " de la lista de participantes.");
     }
+
     @CommandAlias("teamsview")
     @Subcommand("teamsview")
     @CommandPermission("teammingslots.executer")
@@ -207,7 +159,68 @@ public class TeamCMD extends BaseCommand {
         sender.sendMessage(teamsView);
     }
 
+    /**
+     * TP Command, firsts where, then who
+     * Where: could be: own (where 'who' team spawn location) or a coordinate like 'x,y,z', example: 100,0,50
+     * Who: Could be 'all' or a slot. It's called identifier because it identifies all to refer all or a slot number in a range
+     * of [1,60]
+     *
+     * @param sender
+     * @param location
+     * @param identifier
+     */
+    @CommandAlias("slot")
+    @Subcommand("teleport")
+    @CommandPermission("teammingslots.executer")
+    @Description("Teletransportar uno por slot o todos los slots a una coordenada.La coordenada es dada o automatica " +
+            "'own'.")
+    @Syntax("/slot teleport <all,slotNumber> <coordenada, own>")
+    public void teletransportTeam(CommandSender sender, @Conditions("x,y,z") String location, @Values("@range:1-60") String identifier) {
+        identifier = identifier.toLowerCase();
+        location = location.toLowerCase();
+        if (identifier != "all") {
+            int teamSlot = Integer.parseInt(identifier);
 
+            Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
+                    .findFirst().orElse(null);
+            if (teamToTeleport != null) {
+                Location teleportLocation = getLocationFromString(location);
+                teamToTeleport.teleportTeam(teleportLocation);
+                sender.sendMessage(ChatColor.GREEN + "El equipo con el slot " + teamSlot + " ha sido teletransportado"
+                        + " correctamente a la ubicación " + location);
+            } else {
+                sender.sendMessage(ChatColor.RED + "[!] El team con el slot " + teamSlot + " no fue encontrado. Intente un "
+                        + "un slot menor");
+            }
+        } else {
+            if (teamManager.getTeams().isEmpty()) {
+                sender.sendMessage(ChatColor.RED + "No hay equipos creados");
+                return;
+            }
+            for (Team team : teamManager.getTeams()) {
+                Location teleportLocation;
+                if (location.equals("own")) {
+                    teleportLocation = team.getTeamLocation();
+                } else {
+                    teleportLocation = getLocationFromString(location);
+                }
+                for (Player player : team.getPlayers()) {
+                    player.teleport(teleportLocation);
+                }
+            }
+            sender.sendMessage(ChatColor.GREEN + "Todos los equipos han sido teletransportados a la ubicación "
+                    + location);
+
+        }
+    }
+
+    private Location getLocationFromString(String stringLocation) {
+        String[] parts = stringLocation.split(",");
+        double x = Double.parseDouble(parts[0]);
+        double y = Double.parseDouble(parts[1]);
+        double z = Double.parseDouble(parts[2]);
+        return new Location(Bukkit.getWorld("world"), x, y, z);
+    }
 
 
 }
