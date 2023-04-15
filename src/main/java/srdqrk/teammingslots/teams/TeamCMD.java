@@ -2,9 +2,11 @@ package srdqrk.teammingslots.teams;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
+import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -14,7 +16,7 @@ import srdqrk.teammingslots.teams.objects.Team;
 import java.util.ArrayList;
 import java.util.List;
 
-@CommandAlias("team|teams")
+@CommandAlias("team|teams|slot|slots")
 public class TeamCMD extends BaseCommand {
 
     private final TeammingSlots instance;
@@ -175,7 +177,7 @@ public class TeamCMD extends BaseCommand {
     @Description("Teletransportar uno por slot o todos los slots a una coordenada.La coordenada es dada o automatica " +
             "'own'.")
     @Syntax("/slot teleport <all,slotNumber> <coordenada, own>")
-    public void teletransportTeam(CommandSender sender, @Conditions("x,y,z") String location, @Values("@range:1-60") String identifier) {
+    public void onTeletransportTeam(CommandSender sender, @Conditions("x,y,z") String location, @Values("@range:1-60") String identifier) {
         identifier = identifier.toLowerCase();
         location = location.toLowerCase();
         if (identifier != "all") {
@@ -211,6 +213,19 @@ public class TeamCMD extends BaseCommand {
             sender.sendMessage(ChatColor.GREEN + "Todos los equipos han sido teletransportados a la ubicación "
                     + location);
 
+        }
+    }
+    @CommandAlias("return")
+    @CommandCompletion("@participants")
+    @CommandPermission("teammingslots.executer")
+    @Description("Retorna un jugador a su posicion de team")
+    public void onReturnPlayer(CommandSender sender, OnlinePlayer playerSearched) {
+        Team playerSrchdTeam = this.teamManager.getPlayerTeam(playerSearched.getPlayer());
+        if (playerSrchdTeam != null) {
+            playerSearched.getPlayer().teleport(playerSrchdTeam.getTeamLocation());
+        } else {
+            sender.sendMessage(ChatColor.RED + "El jugador " + playerSearched.getPlayer().getName() + " no existe o no " +
+                    "tiene equipo.");
         }
     }
 

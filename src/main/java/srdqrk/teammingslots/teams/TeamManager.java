@@ -94,4 +94,15 @@ public class TeamManager {
     public void deleteTeams() {
         this.teams.clear();
     }
+
+    public Team getPlayerTeam(Player playerToFind) {
+        for (Team team : this.getTeams()) {
+            for (Player player : team.getPlayers()) {
+                if (player.getName().equals(playerToFind.getName())) {
+                    return team;
+                }
+            }
+        }
+        return null;
+    }
 }
