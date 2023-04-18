@@ -10,9 +10,8 @@ import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.teams.objects.Slot;
 import srdqrk.teammingslots.teams.objects.Team;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 @Data
 public class TeamManager {
     TeammingSlots instance;
@@ -46,29 +45,50 @@ public class TeamManager {
     public void createTeams(int maxPlayersPerTeam) {
         this.deleteTeams();
 
-        List<String> participantes = config.getStringList("participantes");
+        List<String> participants = config.getStringList("participantes");
         // Players that are online and are in "participantes"
-        List<Player> onlinePlayers = new ArrayList<>();
+        List<Player> onlinePaticipants = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (participantes.contains(player.getName())) {
-                onlinePlayers.add(player);
+            if (participants.contains(player.getName())) {
+                onlinePaticipants.add(player);
             }
         }
-        Collections.shuffle(onlinePlayers); // Shuffle players to randomize team assignment
-        int numTeams = (int) Math.ceil((double) onlinePlayers.size() / maxPlayersPerTeam); // Calculate number of teams needed
+        Collections.shuffle(onlinePaticipants); // Shuffle players to randomize team assignment
+
+        int numTeams = (int) Math.ceil((double) onlinePaticipants.size() / maxPlayersPerTeam); // Calculate number of teams needed
         int playerIndex = 0;
+
+        onlinePaticipants = formatOnlinePlayers(onlinePaticipants); // format participants to force roleplayers team up
         for (int i = 0; i < numTeams; i++) {
             List<Player> teamPlayers = new ArrayList<>();
-            for (int j = 0; j < maxPlayersPerTeam && playerIndex < onlinePlayers.size(); j++) {
-                Player player = onlinePlayers.get(playerIndex++);
+            for (int j = 0; j < maxPlayersPerTeam && playerIndex < onlinePaticipants.size(); j++) {
+                Player player = onlinePaticipants.get(playerIndex++);
                 teamPlayers.add(player);
             }
-            teams.add(new Team(teamPlayers, slots.get(i))); // Create team with player list and team location
+            teams.add(new Team(teamPlayers)); // Create team with player list
+        }
+        Collections.shuffle(teams); // Shuffle teams to randomize slots assignment
+        for (int index = 0; index < this.teams.size() ; index++) { // for each team assing a slot from slots list
+            Team team = this.teams.get(index);
+            team.setSlot(this.slots.get(index));
         }
     }
 
-
+    public List<Player> formatOnlinePlayers(List<Player> playersList) {
+        List<String> roleplayers = config.getStringList("roleplayers");
+        Set<String> roleplayersSet = new HashSet<>(roleplayers);
+        // Remove all roleplayers from playerList
+        playersList.removeIf(player -> roleplayersSet.contains(player.getName()));
+        // Add all roleplayers again, this implies that the players going to be paired always
+        for (String roleName : roleplayers) {
+            Player rolePlayer = Bukkit.getPlayer(roleName);
+            if (rolePlayer != null) {
+                playersList.add(rolePlayer);
+            }
+        }
+        return playersList;
+    }
     public void createSlots(int maxSlots) {
         int hoyo_index = 0;
         Location startCroner = loadStartCorner(this.hoyos.get(hoyo_index));

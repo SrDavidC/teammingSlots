@@ -3,10 +3,10 @@ package srdqrk.teammingslots.teams;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -57,7 +57,7 @@ public class TeamCMD extends BaseCommand {
     public void deleteTeams(CommandSender sender) {
         try {
             this.teamManager.deleteTeams();
-            sender.sendMessage(ChatColor.GREEN + "Los equipos han sido disueltos.");
+            sender.sendMessage(ChatColor.GREEN + "Los equipos han sido disueltos");
         } catch (Exception e) {
             sender.sendMessage(ChatColor.RED + "Los equipos no pudieron ser disueltos. Consulte la consola para más " +
                     "información acerca de este error");
@@ -71,7 +71,7 @@ public class TeamCMD extends BaseCommand {
     @CommandPermission("teammingslots.executer")
     public void onAddAllParticipants(Player sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
-            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando.");
+            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando");
             return;
         }
         if (!config.contains("participantes")) {
@@ -88,12 +88,12 @@ public class TeamCMD extends BaseCommand {
             }
 
             participants.add(player.getName());
-            sender.sendMessage(ChatColor.GREEN + "Se ha agregado a " + player.getName() + " a la lista de participantes.");
+            sender.sendMessage(ChatColor.GREEN + "Se ha agregado a " + player.getName() + " a la lista de participantes");
         }
 
         config.set("participantes", participants);
         this.instance.saveConfig();
-        sender.sendMessage(ChatColor.GREEN + "Se ha agregado a todos los jugadores elegibles a la lista de participantes.");
+        sender.sendMessage(ChatColor.GREEN + "Se ha agregado a todos los jugadores elegibles a la lista de participantes");
     }
 
     @CommandAlias("removeParticipants")
@@ -101,7 +101,7 @@ public class TeamCMD extends BaseCommand {
     @CommandPermission("teammingslots.executer")
     public void onRemoveAllParticipants(Player sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
-            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando.");
+            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando");
             return;
         }
         if (!config.contains("participantes")) {
@@ -109,7 +109,7 @@ public class TeamCMD extends BaseCommand {
         }
         config.set("participantes", null);
         this.instance.saveConfig();
-        sender.sendMessage(ChatColor.GREEN + "Se eliminaron todos los participantes del archivo de configuración.");
+        sender.sendMessage(ChatColor.GREEN + "Se eliminaron todos los participantes del archivo de configuración");
     }
 
     @CommandAlias("removeplayer")
@@ -138,10 +138,11 @@ public class TeamCMD extends BaseCommand {
         // Broadcast to all staffs
         for (Player staffPlayer : Bukkit.getOnlinePlayers()) {
             if (staffPlayer.hasPermission("teammingslots.executer")) {
-                staffPlayer.sendMessage(ChatColor.YELLOW + "[INFO]" + ChatColor.RED + " El jugador " + player.getName() + " ha sido eliminado.");
+                staffPlayer.sendMessage(ChatColor.YELLOW + "[INFO]" + ChatColor.RED + " El jugador " + player.getName() +
+                        " ha sido eliminado");
             }
         }
-        sender.sendMessage(ChatColor.GREEN + "Se ha eliminado al jugador " + player.getName() + " de la lista de participantes.");
+        sender.sendMessage(ChatColor.GREEN + "Se ha eliminado al jugador " + player.getName() + " de la lista de participantes");
     }
 
     @CommandAlias("teamsview")
@@ -202,12 +203,12 @@ public class TeamCMD extends BaseCommand {
             for (Team team : teamManager.getTeams()) {
                 Location teleportLocation;
                 if (location.equals("own")) {
-                    teleportLocation = team.getTeamLocation();
+                    team.teleportTeamToOwnLocation();
                 } else {
                     teleportLocation = getLocationFromString(location);
-                }
-                for (Player player : team.getPlayers()) {
-                    player.teleport(teleportLocation);
+                    for (Player player : team.getPlayers()) {
+                        player.teleport(teleportLocation);
+                    }
                 }
             }
             sender.sendMessage(ChatColor.GREEN + "Todos los equipos han sido teletransportados a la ubicación "
@@ -225,7 +226,7 @@ public class TeamCMD extends BaseCommand {
             playerSearched.getPlayer().teleport(playerSrchdTeam.getTeamLocation());
         } else {
             sender.sendMessage(ChatColor.RED + "El jugador " + playerSearched.getPlayer().getName() + " no existe o no " +
-                    "tiene equipo.");
+                    "tiene equipo");
         }
     }
 

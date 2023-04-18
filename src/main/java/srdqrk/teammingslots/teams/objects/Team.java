@@ -1,7 +1,6 @@
 package srdqrk.teammingslots.teams.objects;
 
 import lombok.Data;
-import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -13,10 +12,17 @@ public class Team {
     List<Player> players;
     Location teamLocation;
     Slot slot;
+
+    /*
     public Team(List<Player> players, Slot slot) {
         this.players = players;
         this.slot = slot;
         this.teamLocation = slot.getSpawnLocation();
+    }
+    */
+
+    public Team(List<Player> players) {
+        this.players = players;
     }
 
     public void teleportTeam(Location location) {
@@ -25,19 +31,24 @@ public class Team {
         }
     }
 
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+        this.teamLocation = slot.getSpawnLocation();
+    }
     public void teleportTeamToOwnLocation() {
         this.teleportTeam(this.teamLocation);
     }
 
     public String getInfo() {
-        String info = "";
-        info += ChatColor.YELLOW + "Slot #" + this.slot.getNumber();
-        info += "\n" + ChatColor.GREEN;
+        StringBuilder info = new StringBuilder();
+        info.append(ChatColor.YELLOW + "Slot #")
+                .append(this.slot.getNumber())
+                .append("\n" + ChatColor.GREEN);
         for (Player p: this.players) {
-            info += p.getName() + ",";
+            info.append(p.getName()).append(",");
         }
-        info = info.substring(0, info.length()-1)  ;
-        return info;
+        info = new StringBuilder(info.substring(0, info.length() - 1));
+        return info.toString();
     }
 
 }

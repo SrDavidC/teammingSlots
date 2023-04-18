@@ -4,7 +4,7 @@ import co.aikar.commands.BukkitCommandManager;
 import co.aikar.commands.CommandCompletionContext;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
