@@ -238,6 +238,5 @@ public class TeamCMD extends BaseCommand {
         return new Location(Bukkit.getWorld("world"), x, y, z);
     }
 
-
 }
 

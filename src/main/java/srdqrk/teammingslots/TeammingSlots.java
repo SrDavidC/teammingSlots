@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import srdqrk.teammingslots.teams.MatchCMD;
 import srdqrk.teammingslots.teams.TeamCMD;
 import srdqrk.teammingslots.teams.TeamListener;
 import srdqrk.teammingslots.teams.TeamManager;
@@ -23,20 +24,25 @@ public final class TeammingSlots extends JavaPlugin {
     @Getter
     BukkitCommandManager commandManager;
     FileConfiguration configFile;
+    protected static TeammingSlots instance;
     @Override
     public void onEnable() {
         // Plugin startup logic
+      this.instance = this;
         // Load config default values
         this.loadDefaultConfigFile();
         // Instance Managers and events
         this.teamManager = new TeamManager(this);
         this.commandManager = new BukkitCommandManager(this);
         Bukkit.getPluginManager().registerEvents(new TeamListener(this), this);
-        commandManager.registerCommand(new TeamCMD(this));
-
         this.configFile = this.getConfig();
         // Add default config
         this.configGame();
+
+
+        /** Commands **/
+        commandManager.registerCommand(new TeamCMD(this));
+        commandManager.registerCommand(new MatchCMD());
     }
 
     @Override
@@ -83,5 +89,9 @@ public final class TeammingSlots extends JavaPlugin {
         List<String> completions = new ArrayList<>();
         completions.add(String.format("%.2f %.2f %.2f", sender.getLocation().getX(), sender.getLocation().getY(), sender.getLocation().getZ()));
         return completions;
+    }
+
+    public static TeammingSlots instance() {
+      return TeammingSlots.instance;
     }
 }
