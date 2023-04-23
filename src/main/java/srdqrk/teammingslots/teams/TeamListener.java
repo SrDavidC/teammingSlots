@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import srdqrk.teammingslots.TeammingSlots;
+import srdqrk.teammingslots.game.GameStateEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,11 @@ public class TeamListener  implements Listener {
 
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
+        // if the players aren't on slots, do nothing
+        if (this.instance.getGame().getGameState() != GameStateEnum.IN_SLOTS) {
+            return;
+        }
+
         Player player = e.getEntity();
         CommandSender sender = Bukkit.getConsoleSender();
         // If the player is not in 'participantes', notify

@@ -95,12 +95,12 @@ public class TeamManager {
         for (int slotCounter = 1; slotCounter < maxSlots ; slotCounter++) {
             Slot newSlot = new Slot(startCroner, slotCounter,(startCroner.getBlockY() - (Y_MEASURE * slotCounter)));
             this.slots.add(newSlot);
-            /*
-            if (slotCounter % 20 == 0 && hoyo_index < 2) {
+
+            if (slotCounter % 37 == 0 && hoyo_index < 2) {
                 hoyo_index++;
                 startCroner = loadStartCorner(this.hoyos.get(hoyo_index));
             }
-            */
+
         }
     }
     public Location loadStartCorner(String hoyo_name) {

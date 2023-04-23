@@ -26,7 +26,7 @@ public class MatchCMD extends BaseCommand {
 
   @Subcommand("forcefinish")
   @CommandPermission("teammingslots.executer")
-  @Description("Retorna un jugador a su posicion de team")
+  @Description("Retorna todos los jugadores a su posicion de team")
   public void onForceFinish(CommandSender sender) {
     if (matchManager.teamManager.getTeams().isEmpty()) {
       sender.sendMessage(ChatColor.RED + "No hay equipos creados");
@@ -37,6 +37,7 @@ public class MatchCMD extends BaseCommand {
     }
     // remove past pairs, set up to the next match
     this.matchManager.playerPairs.clear();
+    this.matchManager.instance.getGame().startSlots();
   }
 
   @Subcommand("start")
@@ -49,7 +50,7 @@ public class MatchCMD extends BaseCommand {
       return;
     }
 
-    this.matchManager.getInstance().getGame().setGameState(GameStateEnum.IN_SLOTS);
+    this.matchManager.getInstance().getGame().startSlots();
 
     List<Player> participants = new ArrayList<>();
     for (Team team : matchManager.teamManager.getTeams()) {
