@@ -5,6 +5,7 @@ import co.aikar.commands.CommandCompletionContext;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -93,15 +94,15 @@ public final class TeammingSlots extends JavaPlugin {
                 p -> participantes.stream().collect(Collectors.toList()));
     }
 
-    private List<String> locations(CommandCompletionContext context) {
-        if (!(context.getIssuer() instanceof Player)) {
-            return Collections.emptyList();
+
+    public void logStaff(String message) {
+        for (Player staffPlayer : Bukkit.getOnlinePlayers()) {
+            if (staffPlayer.hasPermission("teammingslots.executer")) {
+                staffPlayer.sendMessage(ChatColor.YELLOW + "[INFO]" + message);
+            }
         }
-        Player sender = (Player) context.getIssuer();
-        List<String> completions = new ArrayList<>();
-        completions.add(String.format("%.2f %.2f %.2f", sender.getLocation().getX(), sender.getLocation().getY(), sender.getLocation().getZ()));
-        return completions;
     }
+
 
     public static TeammingSlots instance() {
       return TeammingSlots.instance;

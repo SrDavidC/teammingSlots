@@ -51,24 +51,20 @@ public class MatchCMD extends BaseCommand {
     }
 
     this.matchManager.getInstance().getGame().startSlots();
+    List<Team> teams = this.matchManager.getTeamManager().getTeams();
+    Collections.shuffle(teams);
 
-    List<Player> participants = new ArrayList<>();
-    for (Team team : matchManager.teamManager.getTeams()) {
-      participants.addAll(team.getPlayers());
-    }
-
-    Collections.shuffle(participants);
     int arenasGap = 10;
     int x =  this.matchManager.arenas.get(arenaNumber).getBlockX();
     int y = this.matchManager.arenas.get(arenaNumber).getBlockY();
     int z = this.matchManager.arenas.get(arenaNumber).getBlockZ();
-    for (int i = 0; i < participants.size(); i += 2) {
-      Player p1 = participants.get(i);
-      Player p2 = participants.get(i + 1);
+    for (int i = 0; i < teams.size(); i += 2) {
+      Team t1 = teams.get(i);
+      Team t2 = teams.get(i + 1);
       Location loc1 = new Location(this.matchManager.arenas.get(arenaNumber).getWorld(), x, y + i * arenasGap, z);
-      p1.teleport(loc1);
-      p2.teleport(loc1);
-      MatchPair newMatchPair = new MatchPair(p1,p2,loc1);
+      t1.teleportTeam(loc1);
+      t2.teleportTeam(loc1);
+      MatchPair newMatchPair = new MatchPair(t1,t2,loc1);
       this.matchManager.playerPairs.add(newMatchPair);
     }
 
@@ -80,11 +76,11 @@ public class MatchCMD extends BaseCommand {
   public void onWin(CommandSender sender, OnlinePlayer player) {
     MatchPair matchPair = this.matchManager.getPlayerPair(player.getPlayer());
     if (matchPair != null) {
-      Player player1 = matchPair.getPair().getLeft();
-      Player player2 =  matchPair.getPair().getRight();
+      Team t1 = matchPair.getPair().getLeft();
+      Team t2 =  matchPair.getPair().getRight();
       // tp the players  to their location
-      player1.teleport(this.matchManager.teamManager.getPlayerTeam(player1).getTeamLocation());
-      player2.teleport(this.matchManager.teamManager.getPlayerTeam(player2).getTeamLocation());
+      t1.teleportTeamToOwnLocation();
+      t2.teleportTeamToOwnLocation();
       this.matchManager.playerPairs.remove(matchPair);
     } else {
       sender.sendMessage(ChatColor.RED + "El jugador " + player.getPlayer().getName() +  " tiene pareja nula. No existe o no tiene pareja");

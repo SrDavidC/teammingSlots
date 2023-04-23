@@ -50,5 +50,13 @@ public class Team {
         info = new StringBuilder(info.substring(0, info.length() - 1));
         return info.toString();
     }
+    public boolean containsPlayer(String playerName) {
+        for (Player p : this.players) {
+            if (p.getName().equals(playerName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

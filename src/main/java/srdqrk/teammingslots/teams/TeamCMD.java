@@ -16,7 +16,7 @@ import srdqrk.teammingslots.teams.objects.Team;
 import java.util.ArrayList;
 import java.util.List;
 
-@CommandAlias("team|teams|slot|slots")
+@CommandAlias("team|teams|slot|slots|ts")
 public class TeamCMD extends BaseCommand {
 
     private final TeammingSlots instance;
@@ -38,10 +38,11 @@ public class TeamCMD extends BaseCommand {
     public void createTeams(CommandSender sender, @Values("@range:1-10") Integer maxPlayersPerTeam) {
         try {
             this.teamManager.createTeams(maxPlayersPerTeam);
-            sender.sendMessage(ChatColor.GREEN + "Todos los equipos han sido creados."
+            String log = ChatColor.GREEN + "Todos los equipos han sido creados."
                     + "\nTotalidad de equipos: " + ChatColor.YELLOW + this.teamManager.getTeams().size()
                     + ChatColor.GREEN + "\nCantidad máxima de jugadores por equipo: " + ChatColor.YELLOW + maxPlayersPerTeam
-                    + ChatColor.DARK_GREEN + "\nRecuerda que puedes ver los equipos usando el comando /teamsview");
+                    + ChatColor.DARK_GREEN + "\nRecuerda que puedes ver los equipos usando el comando /teamsview";
+            this.instance.logStaff(log);
         } catch (Exception e) {
             System.out.println(e);
             sender.sendMessage(ChatColor.RED + "Error. Los equipos no pudieron ser creados, consulte la consola para " +
@@ -57,7 +58,8 @@ public class TeamCMD extends BaseCommand {
     public void deleteTeams(CommandSender sender) {
         try {
             this.teamManager.deleteTeams();
-            sender.sendMessage(ChatColor.GREEN + "Los equipos han sido disueltos");
+            String log = ChatColor.GREEN + "Los equipos han sido disueltos";
+            this.instance.logStaff(log);
         } catch (Exception e) {
             sender.sendMessage(ChatColor.RED + "Los equipos no pudieron ser disueltos. Consulte la consola para más " +
                     "información acerca de este error");
@@ -93,13 +95,15 @@ public class TeamCMD extends BaseCommand {
 
         config.set("participantes", participants);
         this.instance.saveConfig();
-        sender.sendMessage(ChatColor.GREEN + "Se ha agregado a todos los jugadores elegibles a la lista de participantes");
+
+        String log = ChatColor.GREEN + "Se han agregado a todos los jugadores elegibles a la lista de participantes";
+        this.instance.logStaff(log);
     }
 
     @CommandAlias("removeParticipants")
     @Subcommand("removeParticipants")
     @CommandPermission("teammingslots.executer")
-    public void onRemoveAllParticipants(Player sender) {
+    public void onRemoveAllParticipants(CommandSender sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
             sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando");
             return;
@@ -109,7 +113,8 @@ public class TeamCMD extends BaseCommand {
         }
         config.set("participantes", null);
         this.instance.saveConfig();
-        sender.sendMessage(ChatColor.GREEN + "Se eliminaron todos los participantes del archivo de configuración");
+        String log = ChatColor.GREEN + "Se eliminaron todos los participantes del archivo de configuración";
+        this.instance.logStaff(log);
     }
 
     @CommandAlias("removeplayer")
@@ -117,7 +122,8 @@ public class TeamCMD extends BaseCommand {
     @Subcommand("removePlayer")
     @CommandPermission("teammingslots.executer")
     @Description("Elimina un jugador de la lista de participantes")
-    public void descalificar(CommandSender sender, @Values("@participants") Player player) {
+    public void descalificar(CommandSender sender,OnlinePlayer onlinePlayer) {
+        Player player = onlinePlayer.getPlayer();
         if (this.config.getList("participantes") != null && this.config.getList("participantes").contains(player.getName())) {
             sender.sendMessage(ChatColor.RED + "El jugador " + player.getName() + " no se encuentra en la lista de participantes.");
             return;
@@ -136,13 +142,9 @@ public class TeamCMD extends BaseCommand {
         // save config
         this.instance.saveConfig();
         // Broadcast to all staffs
-        for (Player staffPlayer : Bukkit.getOnlinePlayers()) {
-            if (staffPlayer.hasPermission("teammingslots.executer")) {
-                staffPlayer.sendMessage(ChatColor.YELLOW + "[INFO]" + ChatColor.RED + " El jugador " + player.getName() +
-                        " ha sido eliminado");
-            }
-        }
-        sender.sendMessage(ChatColor.GREEN + "Se ha eliminado al jugador " + player.getName() + " de la lista de participantes");
+        String log = ChatColor.YELLOW + "[INFO]" + ChatColor.RED + " El jugador " + player.getName() +
+                " ha sido eliminado";
+        this.instance.logStaff(log);
     }
 
     @CommandAlias("teamsview")
@@ -172,13 +174,12 @@ public class TeamCMD extends BaseCommand {
      * @param location
      * @param identifier
      */
-    @CommandAlias("slot")
     @Subcommand("teleport")
     @CommandPermission("teammingslots.executer")
     @Description("Teletransportar uno por slot o todos los slots a una coordenada.La coordenada es dada o automatica " +
             "'own'.")
-    @Syntax("/slot teleport <all,slotNumber> <coordenada, own>")
-    public void onTeletransportTeam(CommandSender sender, @Conditions("x,y,z") String location, @Values("@range:1-60") String identifier) {
+    @Syntax("/slot teleport <coordenada, own> <all,slotNumber>")
+    public void onTeletransportTeam(CommandSender sender, String location, String identifier) {
         identifier = identifier.toLowerCase();
         location = location.toLowerCase();
         if (identifier != "all") {
@@ -224,6 +225,8 @@ public class TeamCMD extends BaseCommand {
         Team playerSrchdTeam = this.teamManager.getPlayerTeam(playerSearched.getPlayer());
         if (playerSrchdTeam != null) {
             playerSearched.getPlayer().teleport(playerSrchdTeam.getTeamLocation());
+            String log = ChatColor.GREEN + playerSearched.getPlayer().getName() + " ha sido teletransportado";
+            this.instance.logStaff(log);
         } else {
             sender.sendMessage(ChatColor.RED + "El jugador " + playerSearched.getPlayer().getName() + " no existe o no " +
                     "tiene equipo");

@@ -5,15 +5,16 @@ import lombok.NonNull;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import srdqrk.teammingslots.teams.objects.Team;
 
 @Data
 public class MatchPair {
 
-  private Pair<Player, Player> pair;
+  private Pair<Team, Team> pair;
   private Location spawnLocation;
 
-  public MatchPair(Player player1, Player player2, @NonNull Location location) {
-    this.pair.of(player1, player2);
+  public MatchPair(Team team1, Team team2, @NonNull Location location) {
+    this.pair.of(team1, team2);
     this.spawnLocation = location;
   }
 }

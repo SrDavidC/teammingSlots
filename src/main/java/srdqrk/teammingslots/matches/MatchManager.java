@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.teams.TeamManager;
+import srdqrk.teammingslots.teams.objects.Team;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,19 +30,19 @@ public class MatchManager {
     this.arenas = new HashMap<>();
     this.playerPairs = new ArrayList<>();
 
-    arenas.put(1,new Location(Bukkit.getWorld(arenasWorld),0,100,0));
-    arenas.put(2,new Location(Bukkit.getWorld(arenasWorld),0,100,0));
-    arenas.put(3,new Location(Bukkit.getWorld(arenasWorld),0,100,0));
-    arenas.put(4,new Location(Bukkit.getWorld(arenasWorld),0,100,0));
-    arenas.put(5,new Location(Bukkit.getWorld(arenasWorld),0,100,0));
-    arenas.put(6,new Location(Bukkit.getWorld(arenasWorld),0,100,0));
+    arenas.put(1,new Location(Bukkit.getWorld(arenasWorld),100,100,0));
+    arenas.put(2,new Location(Bukkit.getWorld(arenasWorld),200,100,0));
+    arenas.put(3,new Location(Bukkit.getWorld(arenasWorld),300,100,0));
+    arenas.put(4,new Location(Bukkit.getWorld(arenasWorld),400,100,0));
+    arenas.put(5,new Location(Bukkit.getWorld(arenasWorld),500,100,0));
+    arenas.put(6,new Location(Bukkit.getWorld(arenasWorld),600,100,0));
 
   }
 
   public MatchPair getPlayerPair(Player player) {
     for (MatchPair matchPair : this.playerPairs) {
-      Pair<Player, Player> pair = matchPair.getPair();
-      if (pair.getLeft().getName().equals(player.getName()) || pair.getRight().getName().equals(player.getName())) {
+      Pair<Team, Team> pair = matchPair.getPair();
+      if (pair.getLeft().containsPlayer(player.getName()) || pair.getLeft().containsPlayer(player.getName())) {
         return matchPair;
       }
     }
