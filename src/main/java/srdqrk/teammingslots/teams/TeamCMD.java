@@ -180,9 +180,7 @@ public class TeamCMD extends BaseCommand {
             "'own'.")
     @Syntax("/slot teleport <coordenada, own> <all,slotNumber>")
     public void onTeletransportTeam(CommandSender sender, String location, String identifier) {
-        identifier = identifier.toLowerCase();
-        location = location.toLowerCase();
-        if (identifier != "all") {
+        if ((identifier.equalsIgnoreCase("all"))) {
             int teamSlot = Integer.parseInt(identifier);
 
             Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
