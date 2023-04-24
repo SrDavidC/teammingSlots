@@ -44,45 +44,13 @@ public class TeamCMD extends BaseCommand {
 
     }
 
-    @CommandAlias("createTeams")
-    @Subcommand("createTeams")
-    @CommandCompletion("@range:1-10")
+    @Subcommand("start")
     @CommandPermission("teammingslots.executer")
-    @Syntax("/team createTeams <maxPlayersPerTeam>")
-    public void createTeams(CommandSender sender, @Values("@range:1-10") @Default("2") Integer maxPlayersPerTeam) {
-        try {
-            this.teamManager.createTeams(maxPlayersPerTeam);
-            String log = ChatColor.GREEN + "Todos los equipos han sido creados."
-                    + "\nTotalidad de equipos: " + ChatColor.YELLOW + this.teamManager.getTeams().size()
-                    + ChatColor.GREEN + "\nCantidad máxima de jugadores por equipo: " + ChatColor.YELLOW + maxPlayersPerTeam
-                    + ChatColor.DARK_GREEN + "\nRecuerda que puedes ver los equipos usando el comando /teamsview";
-            this.instance.logStaff(log);
-        } catch (Exception e) {
-            System.out.println(e);
-            sender.sendMessage(ChatColor.RED + "Error. Los equipos no pudieron ser creados, consulte la consola para " +
-                    "más información acerca de este error.");
-        }
-
+    public void onStart(CommandSender sender, @Default("2") Integer teamSize) {
+        this.onLoadParticipants(sender);
+        this.createTeams(sender, teamSize);
+        this.onTeletransportTeam(sender,"own", "all");
     }
-
-    @CommandAlias("deleteTeams")
-    @Subcommand("deleteTeams")
-    @CommandPermission("teammingslots.executer")
-    @Syntax("/team deleteTeams")
-    public void deleteTeams(CommandSender sender) {
-        try {
-            this.teamManager.deleteTeams();
-            String log = ChatColor.GREEN + "Los equipos han sido disueltos";
-            this.instance.logStaff(log);
-        } catch (Exception e) {
-            sender.sendMessage(ChatColor.RED + "Los equipos no pudieron ser disueltos. Consulte la consola para más " +
-                    "información acerca de este error");
-            System.out.println(e);
-        }
-
-
-    }
-
 
     @CommandAlias("loadParticipants")
     @Subcommand("loadParticipants")
@@ -119,46 +87,56 @@ public class TeamCMD extends BaseCommand {
         String log = ChatColor.GREEN + "Se han agregado a todos los jugadores elegibles a la lista de participantes";
         this.instance.logStaff(log);
     }
-    @CommandAlias("addParticipant")
-    @CommandCompletion("@participants")
-    @Subcommand("addParticipant")
+    @CommandAlias("add")
+    @Subcommand("add")
     @CommandPermission("teammingslots.executer")
-    @Description("Agrega un jugador de la lista de participantes")
-    public void onAddParticipant(CommandSender sender,OnlinePlayer onlinePlayer) {
+    @CommandCompletion("@players @lists")
+    @Description("Elimina un jugador de alguna de la listas de Teamming Slots")
+    public void onAddPlayer(CommandSender sender, OnlinePlayer onlinePlayer, String list) {
         Player player = onlinePlayer.getPlayer();
-        List<String> participantes = this.config.getStringList("participantes");
-        List<String> noParticipantes = this.config.getStringList("noParticipantes");
-
-        // Add from participantes and delete to noParticipantes
-        participantes.add(player.getName());
-        noParticipantes.remove(player.getName());
-        this.config.set("participantes", participantes);
-        this.config.set("noParticipantes", noParticipantes);
-        // save config
+        if (list.equals("NP")) {
+            List<String> noParticipantes = this.config.getStringList("noParticipantes");
+            noParticipantes.add(player.getName());
+            this.config.set("noParticipantes", noParticipantes);
+        } else if (list.equals("participantes")) {
+            List<String> participantes = this.config.getStringList("participantes");
+            participantes.add(player.getName());
+            this.config.set("participantes", participantes);
+        } else {
+            sender.sendMessage(ChatColor.RED + "La lista llamada " + list + " no existe.");
+            return;
+        }
         this.instance.saveConfig();
         // Broadcast to all staffs
         String log = ChatColor.RED + " El jugador " + player.getName() +
-                " ha sido agregado de la lista de participantes y eliminado de la lista de noParticipantes";
+                " ha sido agregado de la lista " + list;
         this.instance.logStaff(log);
     }
-
-    @CommandAlias("clearParticipants")
-    @Subcommand("clearParticipants")
+    @CommandAlias("remove")
+    @Subcommand("remove")
     @CommandPermission("teammingslots.executer")
-    public void onRemoveAllParticipants(CommandSender sender) {
-        if (!sender.hasPermission("teammingslots.executer")) {
-            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando");
+    @CommandCompletion("@players @lists")
+    @Description("Elimina un jugador de alguna de la listas de Teamming Slots")
+    public void onRemovePlayer(CommandSender sender, OnlinePlayer onlinePlayer, @Values("@lists") String list) {
+        Player player = onlinePlayer.getPlayer();
+        if (list.equals("NP")) {
+            List<String> noParticipantes = this.config.getStringList("noParticipantes");
+            noParticipantes.remove(player.getName());
+            this.config.set("noParticipantes", noParticipantes);
+        } else if (list.equals("participantes")) {
+            List<String> participantes = this.config.getStringList("participantes");
+            participantes.remove(player.getName());
+            this.config.set("participantes", participantes);
+        } else {
+            sender.sendMessage(ChatColor.RED + "La lista llamada " + list + " no existe.");
             return;
         }
-        if (!config.contains("participantes")) {
-            config.set("participantes", new ArrayList<String>());
-        }
-        config.set("participantes", null);
         this.instance.saveConfig();
-        String log = ChatColor.GREEN + "Se eliminaron todos los participantes del archivo de configuración";
+        // Broadcast to all staffs
+        String log = ChatColor.RED + " El jugador " + player.getName() +
+                " ha sido eliminado de la lista " + list;
         this.instance.logStaff(log);
     }
-
     @Subcommand("clear")
     @CommandPermission("teammingslots.executer")
     @CommandCompletion("@lists")
@@ -181,49 +159,6 @@ public class TeamCMD extends BaseCommand {
         this.instance.logStaff(log);
     }
 
-    @CommandAlias("removeplayer")
-    @CommandCompletion("@participants")
-    @Subcommand("removePlayer")
-    @CommandPermission("teammingslots.executer")
-    @Description("Elimina un jugador de la lista de participantes")
-    public void onRemovePlayer(CommandSender sender,OnlinePlayer onlinePlayer) {
-        Player player = onlinePlayer.getPlayer();
-        List<String> participantes = this.config.getStringList("participantes");
-        List<String> noParticipantes = this.config.getStringList("noParticipantes");
-
-        // Delete from participantes and add to noParticipantes
-        participantes.remove(player.getName());
-        noParticipantes.add(player.getName());
-        this.config.set("participantes", participantes);
-        this.config.set("noParticipantes", noParticipantes);
-        // save config
-        this.instance.saveConfig();
-        // Broadcast to all staffs
-        String log = ChatColor.RED + " El jugador " + player.getName() +
-                " ha sido eliminado de la lista de participantes";
-        this.instance.logStaff(log);
-    }
-
-    @CommandAlias("removeNPplayer")
-    @CommandCompletion("@participants")
-    @Subcommand("removeNPplayer")
-    @CommandPermission("teammingslots.executer")
-    @Description("Elimina un jugador de la lista de participantes")
-    public void onRemoveNPPlayer(CommandSender sender,OnlinePlayer onlinePlayer) {
-        Player player = onlinePlayer.getPlayer();
-        List<String> noParticipantes = this.config.getStringList("noParticipantes");
-
-        // Delete from participantes and add to noParticipantes
-        noParticipantes.remove(player.getName());
-        this.config.set("noParticipantes", noParticipantes);
-        // save config
-        this.instance.saveConfig();
-        // Broadcast to all staffs
-        String log = ChatColor.RED + " El jugador " + player.getName() +
-                " ha sido eliminado de la lista de NO participantes";
-        this.instance.logStaff(log);
-    }
-
     @CommandAlias("teamsview")
     @Subcommand("teamsview")
     @CommandPermission("teammingslots.executer")
@@ -239,6 +174,43 @@ public class TeamCMD extends BaseCommand {
             }
         }
         sender.sendMessage(teamsView);
+    }
+
+    @CommandAlias("createTeams")
+    @Subcommand("createTeams")
+    @CommandCompletion("@range:1-10")
+    @CommandPermission("teammingslots.executer")
+    @Syntax("/team createTeams <maxPlayersPerTeam>")
+    public void createTeams(CommandSender sender, @Values("@range:1-10") @Default("2") Integer maxPlayersPerTeam) {
+        try {
+            this.teamManager.createTeams(maxPlayersPerTeam);
+            String log = ChatColor.GREEN + "Todos los equipos han sido creados."
+                    + "\nTotalidad de equipos: " + ChatColor.YELLOW + this.teamManager.getTeams().size()
+                    + ChatColor.GREEN + "\nCantidad máxima de jugadores por equipo: " + ChatColor.YELLOW + maxPlayersPerTeam
+                    + ChatColor.DARK_GREEN + "\nRecuerda que puedes ver los equipos usando el comando /teamsview";
+            this.instance.logStaff(log);
+        } catch (Exception e) {
+            System.out.println(e);
+            sender.sendMessage(ChatColor.RED + "Error. Los equipos no pudieron ser creados, consulte la consola para " +
+                    "más información acerca de este error.");
+        }
+
+    }
+
+    @CommandAlias("deleteTeams")
+    @Subcommand("deleteTeams")
+    @CommandPermission("teammingslots.executer")
+    @Syntax("/team deleteTeams")
+    public void deleteTeams(CommandSender sender) {
+        try {
+            this.teamManager.deleteTeams();
+            String log = ChatColor.GREEN + "Los equipos han sido disueltos";
+            this.instance.logStaff(log);
+        } catch (Exception e) {
+            sender.sendMessage(ChatColor.RED + "Los equipos no pudieron ser disueltos. Consulte la consola para más " +
+                    "información acerca de este error");
+            System.out.println(e);
+        }
     }
 
     /**
@@ -314,13 +286,6 @@ public class TeamCMD extends BaseCommand {
         double y = Double.parseDouble(parts[1]);
         double z = Double.parseDouble(parts[2]);
         return new Location(Bukkit.getWorld("world"), x, y, z);
-    }
-    @Subcommand("start")
-    @CommandPermission("teammingslots.executer")
-    public void onStart(CommandSender sender, @Default("2") Integer teamSize) {
-        this.onLoadParticipants(sender);
-        this.createTeams(sender, teamSize);
-        this.onTeletransportTeam(sender,"own", "all");
     }
 
 }
