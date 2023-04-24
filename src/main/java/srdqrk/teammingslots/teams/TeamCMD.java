@@ -15,6 +15,9 @@ import srdqrk.teammingslots.teams.objects.Team;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @CommandAlias("team|teams|slot|slots|ts")
 public class TeamCMD extends BaseCommand {
@@ -27,6 +30,17 @@ public class TeamCMD extends BaseCommand {
         this.instance = instance;
         this.config = instance.getConfig();
         this.teamManager = this.instance.getTeamManager();
+
+        instance.getCommandManager().getCommandCompletions().registerStaticCompletion("lists",
+                List.of("NP", "participantes"));
+        instance.getCommandManager().getCommandCompletions().registerStaticCompletion("locations",
+                List.of("x,y,z", "own"));
+        List<String> opciones = new ArrayList<>(List.of("all"));
+        List<String> numeros = IntStream.rangeClosed(1, 60)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.toList());
+        opciones.addAll(numeros);
+        instance.getCommandManager().getCommandCompletions().registerStaticCompletion("identifiers", opciones);
 
     }
 
@@ -68,6 +82,8 @@ public class TeamCMD extends BaseCommand {
 
 
     }
+
+
     @CommandAlias("loadParticipants")
     @Subcommand("loadParticipants")
     @CommandPermission("teammingslots.executer")
@@ -143,6 +159,28 @@ public class TeamCMD extends BaseCommand {
         this.instance.logStaff(log);
     }
 
+    @Subcommand("clear")
+    @CommandPermission("teammingslots.executer")
+    @CommandCompletion("@lists")
+    public void onClear(CommandSender sender, String list) {
+        if (!sender.hasPermission("teammingslots.executer")) {
+            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando");
+            return;
+        }
+        if (list.equals("NP")) {
+            config.set("noParticipantes", null);
+        } else if (list.equals("participantes")) {
+            config.set("participantes", null);
+        } else {
+            sender.sendMessage(ChatColor.RED + "La lista llamada " + list + " no existe.");
+            return;
+        }
+
+        this.instance.saveConfig();
+        String log = ChatColor.RED + "Se eliminaron todos los elementos de la lista " + list;
+        this.instance.logStaff(log);
+    }
+
     @CommandAlias("removeplayer")
     @CommandCompletion("@participants")
     @Subcommand("removePlayer")
@@ -186,25 +224,6 @@ public class TeamCMD extends BaseCommand {
         this.instance.logStaff(log);
     }
 
-    @CommandAlias("clearNoParticipantes")
-    @CommandCompletion("@participants")
-    @Subcommand("clearNoParticipantes")
-    @CommandPermission("teammingslots.executer")
-    @Description("Elimina todos los jugadores de la lista de no participantes")
-    public void onClearNP(CommandSender sender) {
-        if (!sender.hasPermission("teammingslots.executer")) {
-            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando");
-            return;
-        }
-        if (!config.contains("noParticipantes")) {
-            config.set("noParticipantes", new ArrayList<String>());
-        }
-        config.set("noParticipantes", null);
-        this.instance.saveConfig();
-        String log = ChatColor.GREEN + "Se eliminaron todos los NO participantes del archivo de configuración";
-        this.instance.logStaff(log);
-    }
-
     @CommandAlias("teamsview")
     @Subcommand("teamsview")
     @CommandPermission("teammingslots.executer")
@@ -237,6 +256,7 @@ public class TeamCMD extends BaseCommand {
     @Description("Teletransportar uno por slot o todos los slots a una coordenada.La coordenada es dada o automatica " +
             "'own'.")
     @Syntax("/slot teleport <coordenada, own> <all,slotNumber>")
+    @CommandCompletion("@locations @identifiers")
     public void onTeletransportTeam(CommandSender sender, String location, String identifier) {
         if (!(identifier.equalsIgnoreCase("all"))) {
             int teamSlot = Integer.parseInt(identifier);
