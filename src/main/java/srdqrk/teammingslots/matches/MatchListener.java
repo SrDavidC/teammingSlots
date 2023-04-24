@@ -1,12 +1,14 @@
 package srdqrk.teammingslots.matches;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.game.GameStateEnum;
+
+import java.util.Objects;
 
 public class MatchListener implements Listener {
 
@@ -25,7 +27,7 @@ public class MatchListener implements Listener {
         MatchPair matchPair = this.matchManager.getPlayerPair(player);
         if (matchPair != null) {
           player.teleport(matchPair.getSpawnLocation());
-          player.setHealth(player.getMaxHealth());
+          player.setHealth(Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue());
         }
     }
   }
