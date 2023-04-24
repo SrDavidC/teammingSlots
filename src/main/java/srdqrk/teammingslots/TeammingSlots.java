@@ -56,6 +56,9 @@ public final class TeammingSlots extends JavaPlugin {
         /** Commands **/
         commandManager.registerCommand(new TeamCMD(this));
         commandManager.registerCommand(new MatchCMD(this.matchManager));
+
+        /**Extra **/
+
     }
 
     @Override
@@ -83,7 +86,7 @@ public final class TeammingSlots extends JavaPlugin {
         config.addDefault("hoyo_3.world", "world");
 
 
-        config.addDefault("noParticipantes", new ArrayList<>());
+        // config.addDefault("noParticipantes", new ArrayList<>());
         config.options().copyDefaults(true);
         saveConfig();
     }

@@ -35,7 +35,7 @@ public class TeamCMD extends BaseCommand {
     @CommandCompletion("@range:1-10")
     @CommandPermission("teammingslots.executer")
     @Syntax("/team createTeams <maxPlayersPerTeam>")
-    public void createTeams(CommandSender sender, @Values("@range:1-10") Integer maxPlayersPerTeam) {
+    public void createTeams(CommandSender sender, @Values("@range:1-10") @Default("2") Integer maxPlayersPerTeam) {
         try {
             this.teamManager.createTeams(maxPlayersPerTeam);
             String log = ChatColor.GREEN + "Todos los equipos han sido creados."
@@ -71,20 +71,24 @@ public class TeamCMD extends BaseCommand {
     @CommandAlias("loadParticipants")
     @Subcommand("loadParticipants")
     @CommandPermission("teammingslots.executer")
-    public void onAddAllParticipants(Player sender) {
+    public void onLoadParticipants(CommandSender sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
             sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando");
             return;
         }
-        if (!config.contains("participantes")) {
-            config.set("participantes", new ArrayList<String>());
-        }
-        if (!config.contains("noParticipantes")) {
-            config.set("noParticipantes", new ArrayList<String>());
-        }
         List<String> participants = config.getStringList("participantes");
         List<String> noParticipantes = config.getStringList("noParticipantes");
+
+        if (participants == null) {
+            config.set("participantes", new ArrayList<String>());
+        }
+        /*
+        if (noParticipantes == null) {
+            config.set("noParticipantes", new ArrayList<String>());
+        }
+*/
         for (Player player : Bukkit.getOnlinePlayers()) {
+            // if not participant or already in participants do nothing
             if (noParticipantes.contains(player.getName()) || participants.contains(player.getName())) {
                 continue;
             }
@@ -99,9 +103,31 @@ public class TeamCMD extends BaseCommand {
         String log = ChatColor.GREEN + "Se han agregado a todos los jugadores elegibles a la lista de participantes";
         this.instance.logStaff(log);
     }
+    @CommandAlias("addParticipant")
+    @CommandCompletion("@participants")
+    @Subcommand("addParticipant")
+    @CommandPermission("teammingslots.executer")
+    @Description("Agrega un jugador de la lista de participantes")
+    public void onAddParticipant(CommandSender sender,OnlinePlayer onlinePlayer) {
+        Player player = onlinePlayer.getPlayer();
+        List<String> participantes = this.config.getStringList("participantes");
+        List<String> noParticipantes = this.config.getStringList("noParticipantes");
 
-    @CommandAlias("removeParticipants")
-    @Subcommand("removeParticipants")
+        // Add from participantes and delete to noParticipantes
+        participantes.add(player.getName());
+        noParticipantes.remove(player.getName());
+        this.config.set("participantes", participantes);
+        this.config.set("noParticipantes", noParticipantes);
+        // save config
+        this.instance.saveConfig();
+        // Broadcast to all staffs
+        String log = ChatColor.RED + " El jugador " + player.getName() +
+                " ha sido agregado de la lista de participantes y eliminado de la lista de noParticipantes";
+        this.instance.logStaff(log);
+    }
+
+    @CommandAlias("clearParticipants")
+    @Subcommand("clearParticipants")
     @CommandPermission("teammingslots.executer")
     public void onRemoveAllParticipants(CommandSender sender) {
         if (!sender.hasPermission("teammingslots.executer")) {
@@ -122,28 +148,60 @@ public class TeamCMD extends BaseCommand {
     @Subcommand("removePlayer")
     @CommandPermission("teammingslots.executer")
     @Description("Elimina un jugador de la lista de participantes")
-    public void descalificar(CommandSender sender,OnlinePlayer onlinePlayer) {
+    public void onRemovePlayer(CommandSender sender,OnlinePlayer onlinePlayer) {
         Player player = onlinePlayer.getPlayer();
-        if (this.config.getList("participantes") != null && this.config.getList("participantes").contains(player.getName())) {
-            sender.sendMessage(ChatColor.RED + "El jugador " + player.getName() + " no se encuentra en la lista de participantes.");
-            return;
-        }
-        // If there not exist 'noParticipantes' list, so create it
-        if (!config.contains("noParticipantes")) {
-            config.set("noParticipantes", new ArrayList<String>());
-        }
-        // Delete from participantes and add to noParticipantes
         List<String> participantes = this.config.getStringList("participantes");
         List<String> noParticipantes = this.config.getStringList("noParticipantes");
+
+        // Delete from participantes and add to noParticipantes
         participantes.remove(player.getName());
         noParticipantes.add(player.getName());
         this.config.set("participantes", participantes);
-        this.config.set("noParticipantes", participantes);
+        this.config.set("noParticipantes", noParticipantes);
         // save config
         this.instance.saveConfig();
         // Broadcast to all staffs
-        String log = ChatColor.YELLOW + "[INFO]" + ChatColor.RED + " El jugador " + player.getName() +
-                " ha sido eliminado";
+        String log = ChatColor.RED + " El jugador " + player.getName() +
+                " ha sido eliminado de la lista de participantes";
+        this.instance.logStaff(log);
+    }
+
+    @CommandAlias("removeNPplayer")
+    @CommandCompletion("@participants")
+    @Subcommand("removeNPplayer")
+    @CommandPermission("teammingslots.executer")
+    @Description("Elimina un jugador de la lista de participantes")
+    public void onRemoveNPPlayer(CommandSender sender,OnlinePlayer onlinePlayer) {
+        Player player = onlinePlayer.getPlayer();
+        List<String> noParticipantes = this.config.getStringList("noParticipantes");
+
+        // Delete from participantes and add to noParticipantes
+        noParticipantes.remove(player.getName());
+        this.config.set("noParticipantes", noParticipantes);
+        // save config
+        this.instance.saveConfig();
+        // Broadcast to all staffs
+        String log = ChatColor.RED + " El jugador " + player.getName() +
+                " ha sido eliminado de la lista de NO participantes";
+        this.instance.logStaff(log);
+    }
+
+    @CommandAlias("clearNoParticipantes")
+    @CommandCompletion("@participants")
+    @Subcommand("clearNoParticipantes")
+    @CommandPermission("teammingslots.executer")
+    @Description("Elimina todos los jugadores de la lista de no participantes")
+    public void onClearNP(CommandSender sender) {
+        if (!sender.hasPermission("teammingslots.executer")) {
+            sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando");
+            return;
+        }
+        if (!config.contains("noParticipantes")) {
+            config.set("noParticipantes", new ArrayList<String>());
+        }
+        config.set("noParticipantes", null);
+        this.instance.saveConfig();
+        String log = ChatColor.GREEN + "Se eliminaron todos los NO participantes del archivo de configuración";
         this.instance.logStaff(log);
     }
 
@@ -180,9 +238,8 @@ public class TeamCMD extends BaseCommand {
             "'own'.")
     @Syntax("/slot teleport <coordenada, own> <all,slotNumber>")
     public void onTeletransportTeam(CommandSender sender, String location, String identifier) {
-        if ((identifier.equalsIgnoreCase("all"))) {
+        if (!(identifier.equalsIgnoreCase("all"))) {
             int teamSlot = Integer.parseInt(identifier);
-
             Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
                     .findFirst().orElse(null);
             if (teamToTeleport != null) {
@@ -237,6 +294,13 @@ public class TeamCMD extends BaseCommand {
         double y = Double.parseDouble(parts[1]);
         double z = Double.parseDouble(parts[2]);
         return new Location(Bukkit.getWorld("world"), x, y, z);
+    }
+    @Subcommand("start")
+    @CommandPermission("teammingslots.executer")
+    public void onStart(CommandSender sender, @Default("2") Integer teamSize) {
+        this.onLoadParticipants(sender);
+        this.createTeams(sender, teamSize);
+        this.onTeletransportTeam(sender,"own", "all");
     }
 
 }
