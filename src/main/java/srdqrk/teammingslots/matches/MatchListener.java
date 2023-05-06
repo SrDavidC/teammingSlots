@@ -22,8 +22,8 @@ public class MatchListener implements Listener {
   @EventHandler
   public void onPlayerDeath(EntityDamageEvent e) {
     if (e.getEntity() instanceof Player player
-            && e.getCause() == EntityDamageEvent.DamageCause.VOID
-            && this.instance.getGame().getGameState() == GameStateEnum.IN_MATCH) {
+            && e.getCause().toString().equals(EntityDamageEvent.DamageCause.VOID.toString())
+              &&  this.instance.getGame().getGameState() == GameStateEnum.IN_MATCH) {
         MatchPair matchPair = this.matchManager.getPlayerPair(player);
         if (matchPair != null) {
           player.teleport(matchPair.getSpawnLocation());

@@ -1,7 +1,8 @@
-name: TeammingSlots
-version: '${version}'
+name: teamming-slots
 main: srdqrk.teammingslots.TeammingSlots
+version: "{version}"
 api-version: 1.19
+load: POSTWORLD
 permissions:
   teammingslots.executer:
     description: Permiso para ejecutar comandos. Permiso solo para staffs

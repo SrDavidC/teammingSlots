@@ -50,10 +50,15 @@ public class MatchCMD extends BaseCommand {
       return;
     }
 
-    this.matchManager.getInstance().getGame().startSlots();
+    if (matchManager.teamManager.getTeams().size() == 1) {
+      sender.sendMessage(ChatColor.RED + "La cantidad de equipos debe ser mayor 1.");
+      return;
+    }
+
+    this.matchManager.getInstance().getGame().startMatch();
     List<Team> teams = this.matchManager.getTeamManager().getTeams();
     Collections.shuffle(teams);
-
+    int conversionNumber = -1;
     int arenasGap = 10;
     int x =  this.matchManager.arenas.get(arenaNumber).getBlockX();
     int y = this.matchManager.arenas.get(arenaNumber).getBlockY();
@@ -61,13 +66,14 @@ public class MatchCMD extends BaseCommand {
     for (int i = 0; i < teams.size(); i += 2) {
       Team t1 = teams.get(i);
       Team t2 = teams.get(i + 1);
-      Location loc1 = new Location(this.matchManager.arenas.get(arenaNumber).getWorld(), x, y + i * arenasGap, z);
+      Location loc1 = new Location(this.matchManager.arenas.get(arenaNumber).getWorld(), (x + i * arenasGap), y , z);
+      Location loc2 = new Location(this.matchManager.arenas.get(arenaNumber).getWorld(), (x + i * arenasGap) * conversionNumber, y, z);
       t1.teleportTeam(loc1);
-      t2.teleportTeam(loc1);
+      t2.teleportTeam(loc2);
+      // to do change this to accept loc2
       MatchPair newMatchPair = new MatchPair(t1,t2,loc1);
       this.matchManager.playerPairs.add(newMatchPair);
     }
-
   }
 
   @Subcommand("win")

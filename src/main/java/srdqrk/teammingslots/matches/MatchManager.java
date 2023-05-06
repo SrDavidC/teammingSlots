@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Data
 public class MatchManager {
-  final String arenasWorld = "world";
+  final String arenasWorld = "minigames";
   TeamManager teamManager;
   Map<Integer, Location> arenas;
   List<MatchPair> playerPairs;
@@ -30,19 +30,14 @@ public class MatchManager {
     this.arenas = new HashMap<>();
     this.playerPairs = new ArrayList<>();
 
-    arenas.put(1,new Location(Bukkit.getWorld(arenasWorld),100,100,0));
-    arenas.put(2,new Location(Bukkit.getWorld(arenasWorld),200,100,0));
-    arenas.put(3,new Location(Bukkit.getWorld(arenasWorld),300,100,0));
-    arenas.put(4,new Location(Bukkit.getWorld(arenasWorld),400,100,0));
-    arenas.put(5,new Location(Bukkit.getWorld(arenasWorld),500,100,0));
-    arenas.put(6,new Location(Bukkit.getWorld(arenasWorld),600,100,0));
 
   }
 
   public MatchPair getPlayerPair(Player player) {
     for (MatchPair matchPair : this.playerPairs) {
       Pair<Team, Team> pair = matchPair.getPair();
-      if (pair.getLeft().containsPlayer(player.getName()) || pair.getLeft().containsPlayer(player.getName())) {
+      if (pair.getLeft() != null && pair.getLeft().containsPlayer(player.getName()) ||
+              pair.getRight() != null && pair.getRight().containsPlayer(player.getName())) {
         return matchPair;
       }
     }

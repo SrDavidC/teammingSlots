@@ -50,6 +50,13 @@ public class TeamCMD extends BaseCommand {
         this.onLoadParticipants(sender);
         this.createTeams(sender, teamSize);
         this.onTeletransportTeam(sender,"own", "all");
+
+        this.instance.getMatchManager().getArenas().put(1,new Location(Bukkit.getWorld("minigames"),-45,17,0));
+        this.instance.getMatchManager().getArenas().put(2,new Location(Bukkit.getWorld("minigames"),200,100,0));
+        this.instance.getMatchManager().getArenas().put(3,new Location(Bukkit.getWorld("minigames"),300,100,0));
+        this.instance.getMatchManager().getArenas().put(4,new Location(Bukkit.getWorld("minigames"),400,100,0));
+        this.instance.getMatchManager().getArenas().put(5,new Location(Bukkit.getWorld("minigames"),500,100,0));
+        this.instance.getMatchManager().getArenas().put(6,new Location(Bukkit.getWorld("minigames"),600,100,0));
     }
 
     @CommandAlias("loadParticipants")
@@ -230,12 +237,20 @@ public class TeamCMD extends BaseCommand {
     @Syntax("/slot teleport <coordenada, own> <all,slotNumber>")
     @CommandCompletion("@locations @identifiers")
     public void onTeletransportTeam(CommandSender sender, String location, String identifier) {
+        System.out.println(location);
+        System.out.println(location.length());
+
         if (!(identifier.equalsIgnoreCase("all"))) {
             int teamSlot = Integer.parseInt(identifier);
             Team teamToTeleport = this.teamManager.getTeams().stream().filter(team -> team.getSlot().getNumber() == teamSlot)
                     .findFirst().orElse(null);
             if (teamToTeleport != null) {
-                Location teleportLocation = getLocationFromString(location);
+                Location teleportLocation;
+                if (location.equals("own")) {
+                    teleportLocation = teamToTeleport.getTeamLocation();
+                } else {
+                    teleportLocation = getLocationFromString(location);
+                }
                 teamToTeleport.teleportTeam(teleportLocation);
                 sender.sendMessage(ChatColor.GREEN + "El equipo con el slot " + teamSlot + " ha sido teletransportado"
                         + " correctamente a la ubicación " + location);

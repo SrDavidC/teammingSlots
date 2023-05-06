@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import srdqrk.teammingslots.game.Game;
 import srdqrk.teammingslots.game.GameStateEnum;
 import srdqrk.teammingslots.matches.MatchCMD;
+import srdqrk.teammingslots.matches.MatchListener;
 import srdqrk.teammingslots.matches.MatchManager;
 import srdqrk.teammingslots.teams.TeamCMD;
 import srdqrk.teammingslots.teams.TeamListener;
@@ -49,6 +50,7 @@ public final class TeammingSlots extends JavaPlugin {
 
         /** Listeners **/
         Bukkit.getPluginManager().registerEvents(new TeamListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new MatchListener(this), this);
         this.configFile = this.getConfig();
         // Add default config
         this.configGame();
@@ -58,12 +60,14 @@ public final class TeammingSlots extends JavaPlugin {
         commandManager.registerCommand(new MatchCMD(this.matchManager));
 
         /**Extra **/
+        System.out.println("Teaming Slots loaded");
 
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+      System.out.println("Teaming Slots disabled");
     }
 
     public void loadDefaultConfigFile() {
