@@ -14,6 +14,7 @@ import srdqrk.teammingslots.game.GameStateEnum;
 import srdqrk.teammingslots.matches.MatchCMD;
 import srdqrk.teammingslots.matches.MatchListener;
 import srdqrk.teammingslots.matches.MatchManager;
+import srdqrk.teammingslots.minigames.MinigamesCMD;
 import srdqrk.teammingslots.teams.TeamCMD;
 import srdqrk.teammingslots.teams.TeamListener;
 import srdqrk.teammingslots.teams.TeamManager;
@@ -58,6 +59,7 @@ public final class TeammingSlots extends JavaPlugin {
         /** Commands **/
         commandManager.registerCommand(new TeamCMD(this));
         commandManager.registerCommand(new MatchCMD(this.matchManager));
+        commandManager.registerCommand(new MinigamesCMD());
 
         /**Extra **/
         System.out.println("Teaming Slots loaded");
@@ -105,7 +107,7 @@ public final class TeammingSlots extends JavaPlugin {
     public void logStaff(String message) {
         for (Player staffPlayer : Bukkit.getOnlinePlayers()) {
             if (staffPlayer.hasPermission("teammingslots.executer")) {
-                staffPlayer.sendMessage(ChatColor.YELLOW + "[INFO]" + message);
+                staffPlayer.sendMessage(ChatColor.YELLOW + "[INFO] " + message);
             }
         }
     }

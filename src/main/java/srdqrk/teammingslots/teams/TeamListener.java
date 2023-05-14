@@ -60,4 +60,5 @@ public class TeamListener  implements Listener {
         }
         sender.sendMessage(ChatColor.GREEN + "Se ha eliminado al jugador " + player.getName() + " de la lista de participantes");
     }
+
 }
