@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -37,6 +38,8 @@ public class Arena {
 
   private @Setter Listener listener;
 
+  private @Getter MatchManager matchManager;
+
   public Arena(List<MatchPair> pairs, @NonNull Location coords,@NonNull Vector gap,@NonNull Vector gapTeam,
                @NonNull CurrentArena id, @NonNull Listener listener) {
     this.pairs = pairs;
@@ -48,7 +51,7 @@ public class Arena {
     this.listener = listener;
     this.started = false;
     this.stopped = false;
-    MatchManager matchManager = TeammingSlots.instance().getMatchManager();
+    this.matchManager = TeammingSlots.instance().getMatchManager();
 
   }
 
@@ -128,6 +131,8 @@ public class Arena {
       TeammingSlots.instance().getGame().setCurrentArena(CurrentArena.NONE);
       // Unregister listener
       HandlerList.unregisterAll(this.listener);
+      // Remove actual arena from manager
+      this.matchManager.setActualArena(null);
     } else {
       error = ArenaError.NOT_STARTED;
     }
@@ -139,12 +144,17 @@ public class Arena {
    */
   public ArenaError stop() {
     ArenaError error = ArenaError.SUCCESSFUL;
-    if ( !(this.stopped) ) {
-      HandlerList.unregisterAll(this.listener);
-      this.stopped = true;
+    if (this.started) {
+      if (!(this.stopped) ) {
+        HandlerList.unregisterAll(this.listener);
+        this.stopped = true;
+      } else {
+        error = ArenaError.ALREADY_STOPPED;
+      }
     } else {
-      error = ArenaError.ALREADY_STOPPED;
+      error = ArenaError.NOT_STARTED;
     }
+
     return error;
   }
 
@@ -172,16 +182,21 @@ public class Arena {
       public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
           if (count <= 3) {
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
-            player.sendTitle(String.valueOf(mm.deserialize("<yellow><bold>" + number)), "", 10, 30, 10);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BANJO, 1f, 0.5f);
+            player.sendTitle(ChatColor.RED + "" + ChatColor.BOLD + count, "", 10, 30, 10);
           } else {
-            player.sendTitle(String.valueOf(mm.deserialize("<green><bold>" + number)), "", 10, 30, 10);
+            player.sendTitle(ChatColor.GREEN + "" + ChatColor.BOLD + count, "", 10, 30, 10);
           }
         }
         count--;
 
         if (count < 0) {
           this.cancel();
+          for (Player player : Bukkit.getOnlinePlayers()) {
+            player.playSound(player, Sound.ITEM_GOAT_HORN_SOUND_0, 1F, 1.4F);
+            player.playSound(player, Sound.BLOCK_GLASS_BREAK, 2F, 2F);
+            player.sendActionBar(ChatColor.YELLOW + "¡LA MATCH HA EMPEZADO! \uD83C\uDFF9"); //TODO: solve the spanglish
+          }
         }
       }
     }.runTaskTimer(TeammingSlots.instance(), 0, 20);

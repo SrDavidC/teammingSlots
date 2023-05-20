@@ -4,47 +4,91 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import srdqrk.teammingslots.game.GameStateEnum;
+import srdqrk.teammingslots.TeammingSlots;
+import srdqrk.teammingslots.game.CurrentArena;
+import srdqrk.teammingslots.matches.arenas.Arena;
 import srdqrk.teammingslots.teams.objects.Team;
 
-import java.util.*;
 
 
-@CommandAlias("match|matches")
+@CommandAlias("m|match|matches")
 public class MatchCMD extends BaseCommand {
 
   final private MatchManager matchManager;
+
+  final private MiniMessage mm = TeammingSlots.instance().getMm();
 
   public MatchCMD(MatchManager matchManager) {
     this.matchManager = matchManager;
   }
 
 
-  @Subcommand("forcefinish")
+  @Subcommand("finish")
   @CommandPermission("teammingslots.executer")
   @Description("Retorna todos los jugadores a su posicion de team")
   public void onForceFinish(CommandSender sender) {
-    if (matchManager.teamManager.getTeams().isEmpty()) {
-      sender.sendMessage(ChatColor.RED + "No hay equipos creados");
-      return;
+    Arena arena = this.matchManager.getActualArena();
+    if (arena != null) {
+      System.out.println(arena.finish());
+    } else {
+      sender.sendMessage(ChatColor.RED +  "No existe una arena actual");
     }
-    for (Team team : matchManager.teamManager.getTeams()) {
-      team.teleportTeamToOwnLocation();
-    }
-    // remove past pairs, set up to the next match
-    this.matchManager.playerPairs.clear();
-    this.matchManager.instance.getGame().startSlots();
+
   }
 
   @Subcommand("start")
   @CommandPermission("teammingslots.executer")
   @Description("Empieza una match, el numero de match [1-6] representa cual match debe empezar")
-  @CommandCompletion("@range:1-6")
-  public void onStart(CommandSender sender, int arenaNumber) {
+  public void onStart(CommandSender sender) {
+    Arena arena = this.matchManager.getActualArena();
+    if (arena != null) {
+      if ( !(arena.isStarted()) ) {
+        System.out.println(arena.start());
+      } else {
+        sender.sendMessage(ChatColor.RED +  "La arena actual YA empezó. Para terminarla usa /m finish");
+      }
+    } else {
+      sender.sendMessage(ChatColor.RED +  "No existe una arena actual");
+    }
+  }
+  @Subcommand("stop")
+  @CommandPermission("teammingslots.executer")
+  @Description("")
+  public void onStop(CommandSender sender) {
+    Arena arena = this.matchManager.getActualArena();
+    if (arena != null) {
+      if (arena.isStarted()) {
+        System.out.println(arena.stop());
+      } else {
+        sender.sendMessage(ChatColor.RED +  "La arena actual no ha empezado. Utiliza /m start para empezarla");
+      }
+    } else {
+      sender.sendMessage(ChatColor.RED +  "No existe una arena actual");
+    }
+  }
+
+  @Subcommand("resume")
+  @CommandPermission("teammingslots.executer")
+  @Description("")
+  public void onResume(CommandSender sender) {
+    Arena arena = this.matchManager.getActualArena();
+    if (arena != null) {
+      if (arena.isStarted()) {
+        System.out.println(arena.resume());
+      } else {
+        sender.sendMessage(ChatColor.RED +  "La arena actual no ha empezado. Utiliza /m start para empezarla");
+      }
+    } else {
+      sender.sendMessage(ChatColor.RED +  "No existe una arena actual");
+    }
+  }
+  @Subcommand("create")
+  @CommandPermission("teammingslots.executer")
+  @Description("Empieza una match, el numero de match [1-6] representa cual match debe empezar")
+  public void onCreate(CommandSender sender, CurrentArena arenaNumber) {
     if (matchManager.teamManager.getTeams().isEmpty()) {
       sender.sendMessage(ChatColor.RED + "No hay equipos creados");
       return;
@@ -55,25 +99,15 @@ public class MatchCMD extends BaseCommand {
       return;
     }
 
-    this.matchManager.getInstance().getGame().startMatch();
-    List<Team> teams = this.matchManager.getTeamManager().getTeams();
-    Collections.shuffle(teams);
-    int conversionNumber = -1;
-    int arenasGap = 10;
-    int x =  this.matchManager.arenas.get(arenaNumber).getBlockX();
-    int y = this.matchManager.arenas.get(arenaNumber).getBlockY();
-    int z = this.matchManager.arenas.get(arenaNumber).getBlockZ();
-    for (int i = 0; i < teams.size(); i += 2) {
-      Team t1 = teams.get(i);
-      Team t2 = teams.get(i + 1);
-      Location loc1 = new Location(this.matchManager.arenas.get(arenaNumber).getWorld(), (x + i * arenasGap), y , z);
-      Location loc2 = new Location(this.matchManager.arenas.get(arenaNumber).getWorld(), (x + i * arenasGap) * conversionNumber, y, z);
-      t1.teleportTeam(loc1);
-      t2.teleportTeam(loc2);
-      // to do change this to accept loc2
-      MatchPair newMatchPair = new MatchPair(t1,t2,loc1);
-      this.matchManager.playerPairs.add(newMatchPair);
+    if (matchManager.getActualArena() == null || !(matchManager.getActualArena().isStarted())) {
+      this.matchManager.createArena(arenaNumber);
+      TeammingSlots.instance().logStaff("Se ha creado una instancia de Arena: " + arenaNumber);
+      this.matchManager.getActualArena().setup();
+    } else {
+      sender.sendMessage(ChatColor.RED +  "Ya existe una arena creada. La arena es " +
+              matchManager.getActualArena().id + "\nEliminela ejecutando /match finish");
     }
+
   }
 
   @Subcommand("win")
@@ -92,11 +126,6 @@ public class MatchCMD extends BaseCommand {
       sender.sendMessage(ChatColor.RED + "El jugador " + player.getPlayer().getName() +  " tiene pareja nula. No existe o no tiene pareja");
     }
   }
-
-
-
-
-
 
 
 
