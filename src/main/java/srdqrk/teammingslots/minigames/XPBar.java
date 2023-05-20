@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.scheduler.BukkitTask;
 import srdqrk.teammingslots.TeammingSlots;
 
 public class XPBar implements Listener {
@@ -26,8 +25,9 @@ public class XPBar implements Listener {
     this.instance = TeammingSlots.instance();
     this.additionalXP = additionalXP;
     this.decreaseXP = decreaseXP;
+  }
 
-
+  public void addTask() {
     this.task = instance.getServer().getScheduler().scheduleSyncRepeatingTask(instance, () -> {
       for (Player player : instance.getServer().getOnlinePlayers()) {
         // calculate xp

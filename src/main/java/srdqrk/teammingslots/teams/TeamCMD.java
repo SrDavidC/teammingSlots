@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @CommandAlias("team|teams|slot|slots|ts")
 public class TeamCMD extends BaseCommand {

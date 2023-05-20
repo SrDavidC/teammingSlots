@@ -3,6 +3,7 @@ package srdqrk.teammingslots;
 import co.aikar.commands.BukkitCommandManager;
 import co.aikar.commands.CommandCompletionContext;
 import lombok.Getter;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 
 import org.bukkit.ChatColor;
@@ -35,6 +36,9 @@ public final class TeammingSlots extends JavaPlugin {
     @Getter
     Game game;
     protected static TeammingSlots instance;
+
+  @Getter
+  MiniMessage mm;
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -42,8 +46,8 @@ public final class TeammingSlots extends JavaPlugin {
 
         /** Load default config **/
         this.loadDefaultConfigFile();
-        this.game = new Game(this, GameStateEnum.IN_SLOTS);
-
+        this.game = new Game(this, GameStateEnum.LOBBY);
+        this.mm = MiniMessage.miniMessage();
         /** Managers **/
         this.teamManager = new TeamManager(this);
         this.commandManager = new BukkitCommandManager(this);
