@@ -7,6 +7,7 @@ import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.game.CurrentArena;
 import srdqrk.teammingslots.matches.arenas.Arena;
@@ -93,11 +94,12 @@ public class MatchCMD extends BaseCommand {
       sender.sendMessage(ChatColor.RED + "No hay equipos creados");
       return;
     }
-
+    /*
     if (matchManager.teamManager.getTeams().size() == 1) {
       sender.sendMessage(ChatColor.RED + "La cantidad de equipos debe ser mayor 1.");
       return;
     }
+    */
 
     if (matchManager.getActualArena() == null || !(matchManager.getActualArena().isStarted())) {
       this.matchManager.createArena(arenaNumber);
@@ -116,15 +118,24 @@ public class MatchCMD extends BaseCommand {
   public void onWin(CommandSender sender, OnlinePlayer player) {
     MatchPair matchPair = this.matchManager.getPlayerPair(player.getPlayer());
     if (matchPair != null) {
-      Team t1 = matchPair.getPair().getLeft();
-      Team t2 =  matchPair.getPair().getRight();
+      Team t1 = matchPair.getLeft();
+      Team t2 =  matchPair.getRight();
       // tp the players  to their location
-      t1.teleportTeamToOwnLocation();
-      t2.teleportTeamToOwnLocation();
+      if (t1 != null)
+        t1.teleportTeamToOwnLocation();
+      if (t2 != null)
+        t2.teleportTeamToOwnLocation();
       this.matchManager.playerPairs.remove(matchPair);
     } else {
       sender.sendMessage(ChatColor.RED + "El jugador " + player.getPlayer().getName() +  " tiene pareja nula. No existe o no tiene pareja");
     }
+  }
+
+  @Subcommand("test1")
+  @CommandPermission("teammingslots.executer")
+  public void onTestFunc(Player sender) {
+    MatchPair matchPair = this.matchManager.getPlayerPair(sender);
+    sender.teleport(matchPair.getPlayerSpawnPoint(sender));
   }
 
 

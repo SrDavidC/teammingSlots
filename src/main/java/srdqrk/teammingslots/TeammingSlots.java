@@ -15,13 +15,10 @@ import srdqrk.teammingslots.game.GameStateEnum;
 import srdqrk.teammingslots.matches.MatchCMD;
 import srdqrk.teammingslots.matches.MatchListener;
 import srdqrk.teammingslots.matches.MatchManager;
-import srdqrk.teammingslots.minigames.MinigamesCMD;
 import srdqrk.teammingslots.teams.TeamCMD;
 import srdqrk.teammingslots.teams.TeamListener;
 import srdqrk.teammingslots.teams.TeamManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,7 +60,7 @@ public final class TeammingSlots extends JavaPlugin {
         /** Commands **/
         commandManager.registerCommand(new TeamCMD(this));
         commandManager.registerCommand(new MatchCMD(this.matchManager));
-        commandManager.registerCommand(new MinigamesCMD());
+        // commandManager.registerCommand(new MinigamesCMD());
 
         /**Extra **/
         System.out.println("Teaming Slots loaded");

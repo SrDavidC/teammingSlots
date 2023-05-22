@@ -36,9 +36,9 @@ public class Arena {
   final public @Getter CurrentArena id;
   final public @Getter MiniMessage mm = TeammingSlots.instance().getMm();
 
-  private @Setter Listener listener;
+  @Setter Listener listener;
 
-  private @Getter MatchManager matchManager;
+   @Getter MatchManager matchManager;
 
   public Arena(List<MatchPair> pairs, @NonNull Location coords,@NonNull Vector gap,@NonNull Vector gapTeam,
                @NonNull CurrentArena id, @NonNull Listener listener) {
@@ -71,14 +71,21 @@ public class Arena {
    */
   public ArenaError setup() {
     // Tp all pairs
+    Location firstPair_loc = this.coords;
+    Location secondPair_loc = this.oppositeCoords;
+
     ArenaError error = ArenaError.SUCCESSFUL;
     for (MatchPair pair: this.pairs) {
       if (pair.getLeft() != null) {
-        pair.getLeft().teleportTeam(coords);
+        pair.getLeft().teleportTeam(firstPair_loc.clone());
+        pair.setSpawnLocation(pair.getLeft().getSlot().getNumber(), firstPair_loc.clone());
       }
       if (pair.getRight() != null) {
-        pair.getRight().teleportTeam(oppositeCoords);
+        pair.getRight().teleportTeam(secondPair_loc);
+        pair.setSpawnLocation(pair.getRight().getSlot().getNumber(), secondPair_loc.clone());
       }
+      firstPair_loc.add(gap);
+      secondPair_loc.add(gap);
     }
     return error;
   }
@@ -195,7 +202,7 @@ public class Arena {
           for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player, Sound.ITEM_GOAT_HORN_SOUND_0, 1F, 1.4F);
             player.playSound(player, Sound.BLOCK_GLASS_BREAK, 2F, 2F);
-            player.sendActionBar(ChatColor.YELLOW + "¡LA MATCH HA EMPEZADO! \uD83C\uDFF9"); //TODO: solve the spanglish
+            player.sendActionBar(ChatColor.YELLOW + "¡LA MATCH HA EMPEZADO! \uD83C\uDFF9"); // TODO: solve the spanglish
           }
         }
       }

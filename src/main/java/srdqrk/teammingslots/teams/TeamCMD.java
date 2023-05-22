@@ -98,7 +98,7 @@ public class TeamCMD extends BaseCommand {
     @CommandPermission("teammingslots.executer")
     @CommandCompletion("@players @lists")
     @Description("Elimina un jugador de alguna de la listas de Teamming Slots")
-    public void onAddPlayer(CommandSender sender, OnlinePlayer onlinePlayer, String list) {
+    public void onAddPlayer(CommandSender sender, Player onlinePlayer, String list) {
         Player player = onlinePlayer.getPlayer();
         if (list.equals("NP")) {
             List<String> noParticipantes = this.config.getStringList("noParticipantes");
