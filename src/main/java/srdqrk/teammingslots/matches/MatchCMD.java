@@ -4,16 +4,19 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 
+import lombok.NonNull;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.game.CurrentArena;
 import srdqrk.teammingslots.matches.arenas.Arena;
 import srdqrk.teammingslots.teams.objects.Team;
 
+import java.util.List;
 
 
 @CommandAlias("m|match|matches")
@@ -35,6 +38,11 @@ public class MatchCMD extends BaseCommand {
     Arena arena = this.matchManager.getActualArena();
     if (arena != null) {
       System.out.println(arena.finish());
+      List<String> participants = TeammingSlots.instance().getConfig().getStringList("participantes");
+      // clears levitation
+      for (String pName: participants) {
+        cleanPlayer(Bukkit.getPlayer(pName));
+      }
     } else {
       sender.sendMessage(ChatColor.RED +  "No existe una arena actual");
     }
@@ -126,11 +134,20 @@ public class MatchCMD extends BaseCommand {
     if (matchPair != null) {
       Team t1 = matchPair.getLeft();
       Team t2 =  matchPair.getRight();
-      // tp the players  to their location
-      if (t1 != null)
+      // tp the players  to their location and clears levitation
+      if (t1 != null) {
         t1.teleportTeamToOwnLocation();
-      if (t2 != null)
+        for (Player p: t1.getPlayers()) {
+          cleanPlayer(p);
+        }
+      }
+
+      if (t2 != null) {
         t2.teleportTeamToOwnLocation();
+        for (Player p: t2.getPlayers()) {
+          cleanPlayer(p);
+        }
+      }
       this.matchManager.playerPairs.remove(matchPair);
     } else {
       sender.sendMessage(ChatColor.RED + "El jugador " + player.getPlayer().getName() +  " tiene pareja nula. No existe o no tiene pareja");
@@ -143,7 +160,9 @@ public class MatchCMD extends BaseCommand {
     MatchPair matchPair = this.matchManager.getPlayerPair(sender);
     sender.teleport(matchPair.getPlayerSpawnPoint(sender));
   }
-
+  private void cleanPlayer(@NonNull Player player) {
+    player.removePotionEffect(PotionEffectType.LEVITATION);
+  }
 
 
 }
