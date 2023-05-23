@@ -6,11 +6,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.game.GameStateEnum;
 import org.bukkit.Location;
 import srdqrk.teammingslots.teams.objects.Team;
 
+import java.util.List;
 import java.util.Objects;
 
 public class MatchListener implements Listener {
@@ -44,6 +46,17 @@ public class MatchListener implements Listener {
         if ( !(damagedTeam.getSlot().getNumber() == damagerTeam.getSlot().getNumber())) {
           e.setCancelled(true);
         }
+      }
+    }
+  }
+
+  @EventHandler
+  public void onPlayerMoves(PlayerMoveEvent e) {
+    if (this.instance.getGame().getGameState() == GameStateEnum.STARTING_MATCH) {
+      List<String> participants = TeammingSlots.instance().getConfig().getStringList("participantes");
+      String playerName = e.getPlayer().getName();
+      if (participants.contains(playerName)) {
+        e.setCancelled(true);
       }
     }
   }

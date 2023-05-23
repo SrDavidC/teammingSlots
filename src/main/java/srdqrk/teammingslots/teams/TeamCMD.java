@@ -4,12 +4,14 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.teams.objects.Team;
 
@@ -294,6 +296,18 @@ public class TeamCMD extends BaseCommand {
         }
     }
 
+    @CommandAlias("viewParticipants")
+    @CommandPermission("teammingslots.executer")
+    @Description("Retorna en chat una lista de los participantes")
+    public void onViewParticipants(CommandSender sender) {
+        List<String> participants = config.getStringList("participantes");
+        String message = ChatColor.LIGHT_PURPLE + "";
+        for (String participantName: participants) {
+            message += participantName + "\n";
+        }
+        sender.sendMessage(message);
+    }
+
     private Location getLocationFromString(String stringLocation) {
         String[] parts = stringLocation.split(",");
         double x = Double.parseDouble(parts[0]);
@@ -301,6 +315,7 @@ public class TeamCMD extends BaseCommand {
         double z = Double.parseDouble(parts[2]);
         return new Location(Bukkit.getWorld("world"), x, y, z);
     }
+
 
 }
 

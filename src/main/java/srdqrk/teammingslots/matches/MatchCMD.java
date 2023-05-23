@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -105,6 +106,7 @@ public class MatchCMD extends BaseCommand {
       this.matchManager.createArena(arenaNumber);
       TeammingSlots.instance().logStaff("Se ha creado una instancia de Arena: " + arenaNumber);
       this.matchManager.getActualArena().setup();
+
     } else {
       sender.sendMessage(ChatColor.RED +  "Ya existe una arena creada. La arena es " +
               matchManager.getActualArena().id + "\nEliminela ejecutando /match finish");
@@ -117,6 +119,10 @@ public class MatchCMD extends BaseCommand {
   @Description("Termina una match individual y tepea a los dos jugadores que estaban en la match a su slot del hoyo")
   public void onWin(CommandSender sender, OnlinePlayer player) {
     MatchPair matchPair = this.matchManager.getPlayerPair(player.getPlayer());
+    Team team = TeammingSlots.instance().getTeamManager().getPlayerTeam(player.getPlayer());
+    for (Player p: team.getPlayers()) {
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "i giveRandom " + p.getName());
+    }
     if (matchPair != null) {
       Team t1 = matchPair.getLeft();
       Team t2 =  matchPair.getRight();

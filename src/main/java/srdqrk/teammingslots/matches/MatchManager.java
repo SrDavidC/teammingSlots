@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.game.CurrentArena;
 import srdqrk.teammingslots.matches.arenas.Arena;
+import srdqrk.teammingslots.matches.listeners.ExampleListener;
 import srdqrk.teammingslots.matches.listeners.XPListener;
 import srdqrk.teammingslots.teams.TeamManager;
 import srdqrk.teammingslots.teams.objects.Team;
@@ -84,18 +85,23 @@ public class MatchManager {
       Listener listener;
       switch (arena) {
         case ARENA_1 -> {
-          coordsArena = new Location(Bukkit.getWorld("world"),100,73,100);
+          coordsArena = new Location(Bukkit.getWorld(this.arenasWorld),5,-44,0);
           gap = new Vector(25,0,0);
           gapTeam = new Vector(10,0,0);
           arenaID = CurrentArena.ARENA_1;
-          listener = new XPListener(0.05f,0.07f, arenasWorld);
+          listener = new ExampleListener("Arena 1");
           this.actualArena = new Arena(pairs,coordsArena,gap, gapTeam,arenaID,listener);
         }
         case ARENA_2 -> {
-
+          coordsArena = new Location(Bukkit.getWorld(this.arenasWorld),5,-55,705);
+          gap = new Vector(25,0,0);
+          gapTeam = new Vector(10,0,0);
+          arenaID = CurrentArena.ARENA_2;
+          listener = new ExampleListener("Arena dos");
+          this.actualArena = new Arena(pairs,coordsArena,gap, gapTeam,arenaID,listener);
         }
         case ARENA_3 -> {
-          coordsArena = new Location(Bukkit.getWorld(arenasWorld),100,73,100);
+          coordsArena = new Location(Bukkit.getWorld(this.arenasWorld),5,11,50);
           gap = new Vector(25,0,0);
           gapTeam = new Vector(10,0,0);
           arenaID = CurrentArena.ARENA_3;
@@ -103,10 +109,20 @@ public class MatchManager {
           this.actualArena = new Arena(pairs,coordsArena,gap, gapTeam,arenaID,listener);
         }
         case ARENA_4 -> {
-
+          coordsArena = new Location(Bukkit.getWorld(this.arenasWorld),5,-29,200);
+          gap = new Vector(25,0,0);
+          gapTeam = new Vector(10,0,0);
+          arenaID = CurrentArena.ARENA_4;
+          listener = new ExampleListener("Arena 4");
+          this.actualArena = new Arena(pairs,coordsArena,gap, gapTeam,arenaID,listener);
         }
         case ARENA_5 -> {
-
+          coordsArena = new Location(Bukkit.getWorld(this.arenasWorld),5,-19,300);
+          gap = new Vector(25,0,0);
+          gapTeam = new Vector(10,0,0);
+          arenaID = CurrentArena.ARENA_5;
+          listener = new ExampleListener("Arena 5");
+          this.actualArena = new Arena(pairs,coordsArena,gap, gapTeam,arenaID,listener);
         }
       }
     }

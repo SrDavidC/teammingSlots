@@ -36,11 +36,13 @@ public class Arena {
   final public @Getter CurrentArena id;
   final public @Getter MiniMessage mm = TeammingSlots.instance().getMm();
 
-  @Setter Listener listener;
+  @Setter
+  Listener listener;
 
-   @Getter MatchManager matchManager;
+  @Getter
+  MatchManager matchManager;
 
-  public Arena(List<MatchPair> pairs, @NonNull Location coords,@NonNull Vector gap,@NonNull Vector gapTeam,
+  public Arena(List<MatchPair> pairs, @NonNull Location coords, @NonNull Vector gap, @NonNull Vector gapTeam,
                @NonNull CurrentArena id, @NonNull Listener listener) {
     this.pairs = pairs;
     this.gapTeam = gapTeam;
@@ -75,7 +77,7 @@ public class Arena {
     Location secondPair_loc = this.oppositeCoords;
 
     ArenaError error = ArenaError.SUCCESSFUL;
-    for (MatchPair pair: this.pairs) {
+    for (MatchPair pair : this.pairs) {
       if (pair.getLeft() != null) {
         pair.getLeft().teleportTeam(firstPair_loc.clone());
         pair.setSpawnLocation(pair.getLeft().getSlot().getNumber(), firstPair_loc.clone());
@@ -87,6 +89,7 @@ public class Arena {
       firstPair_loc.add(gap);
       secondPair_loc.add(gap);
     }
+    TeammingSlots.instance().getGame().setGameState(GameStateEnum.STARTING_MATCH);
     return error;
   }
 
@@ -97,16 +100,17 @@ public class Arena {
   public ArenaError start() {
     ArenaError error = ArenaError.SUCCESSFUL;
     if (!(this.started)) {
-      sendTitleCountdown(5);
-      // TODO: disable something that players can move
-      // Initializes their Listeners
-      Bukkit.getPluginManager().registerEvents(this.listener, TeammingSlots.instance());
-      // Change GameStage to IN_MATCH
-      TeammingSlots.instance().getGame().setGameState(GameStateEnum.IN_MATCH);
-      // Change current arena
-      TeammingSlots.instance().getGame().setCurrentArena(this.id);
-      // Update started
-      this.started = true;
+      sendTitleCountdown(5, () -> {
+        // TODO: disable something that players can move
+        // Initializes their Listeners
+        Bukkit.getPluginManager().registerEvents(this.listener, TeammingSlots.instance());
+        // Change GameStage to IN_MATCH
+        TeammingSlots.instance().getGame().setGameState(GameStateEnum.IN_MATCH);
+        // Change current arena
+        TeammingSlots.instance().getGame().setCurrentArena(this.id);
+        // Update started
+        this.started = true;
+      });
     } else {
       error = ArenaError.ALREADY_STARTED;
     }
@@ -124,7 +128,7 @@ public class Arena {
     ArenaError error = ArenaError.SUCCESSFUL;
     if (this.started) {
       // TP pairs to their slot
-      for (MatchPair pair: this.pairs) {
+      for (MatchPair pair : this.pairs) {
         if (pair.getLeft() != null) {
           pair.getLeft().teleportTeamToOwnLocation();
         }
@@ -152,7 +156,7 @@ public class Arena {
   public ArenaError stop() {
     ArenaError error = ArenaError.SUCCESSFUL;
     if (this.started) {
-      if (!(this.stopped) ) {
+      if (!(this.stopped)) {
         HandlerList.unregisterAll(this.listener);
         this.stopped = true;
       } else {
@@ -180,11 +184,10 @@ public class Arena {
   }
 
 
-
-
-  public void sendTitleCountdown(int number) {
+  public void sendTitleCountdown(int number, Runnable onFinish) {
     new BukkitRunnable() {
       int count = number;
+
       @Override
       public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -204,11 +207,10 @@ public class Arena {
             player.playSound(player, Sound.BLOCK_GLASS_BREAK, 2F, 2F);
             player.sendActionBar(ChatColor.YELLOW + "¡LA MATCH HA EMPEZADO! \uD83C\uDFF9"); // TODO: solve the spanglish
           }
+          onFinish.run();
         }
       }
     }.runTaskTimer(TeammingSlots.instance(), 0, 20);
+
   }
-
-
-
 }

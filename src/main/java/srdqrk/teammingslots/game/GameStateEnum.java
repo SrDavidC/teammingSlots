@@ -3,5 +3,6 @@ package srdqrk.teammingslots.game;
 public enum GameStateEnum {
   IN_MATCH,
   IN_SLOTS,
-  LOBBY
+  LOBBY,
+  STARTING_MATCH
 }
