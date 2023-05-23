@@ -205,7 +205,8 @@ public class Arena {
           for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player, Sound.ITEM_GOAT_HORN_SOUND_0, 1F, 1.4F);
             player.playSound(player, Sound.BLOCK_GLASS_BREAK, 2F, 2F);
-            player.sendActionBar(ChatColor.YELLOW + "¡LA MATCH HA EMPEZADO! \uD83C\uDFF9"); // TODO: solve the spanglish
+            // player.sendActionBar(ChatColor.YELLOW + "¡LA MATCH HA EMPEZADO! \uD83C\uDFF9"); // TODO: solve the spanglish
+            player.sendActionBar(mm.deserialize("<yellow> ¡LA MATCH HA EMPEZADO! \uD83C\uDFF9"));
           }
           onFinish.run();
         }

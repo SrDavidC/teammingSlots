@@ -5,7 +5,6 @@ import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 
 import lombok.NonNull;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -17,6 +16,7 @@ import srdqrk.teammingslots.matches.arenas.Arena;
 import srdqrk.teammingslots.teams.objects.Team;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @CommandAlias("m|match|matches")
@@ -24,7 +24,7 @@ public class MatchCMD extends BaseCommand {
 
   final private MatchManager matchManager;
 
-  final private MiniMessage mm = TeammingSlots.instance().getMm();
+  // final private MiniMessage mm = TeammingSlots.instance().getMm();
 
   public MatchCMD(MatchManager matchManager) {
     this.matchManager = matchManager;
@@ -41,7 +41,7 @@ public class MatchCMD extends BaseCommand {
       List<String> participants = TeammingSlots.instance().getConfig().getStringList("participantes");
       // clears levitation
       for (String pName: participants) {
-        cleanPlayer(Bukkit.getPlayer(pName));
+        cleanPlayer(Objects.requireNonNull(Bukkit.getPlayer(pName)));
       }
     } else {
       sender.sendMessage(ChatColor.RED +  "No existe una arena actual");
@@ -103,12 +103,6 @@ public class MatchCMD extends BaseCommand {
       sender.sendMessage(ChatColor.RED + "No hay equipos creados");
       return;
     }
-    /*
-    if (matchManager.teamManager.getTeams().size() == 1) {
-      sender.sendMessage(ChatColor.RED + "La cantidad de equipos debe ser mayor 1.");
-      return;
-    }
-    */
 
     if (matchManager.getActualArena() == null || !(matchManager.getActualArena().isStarted())) {
       this.matchManager.createArena(arenaNumber);

@@ -25,8 +25,7 @@ public class Slot {
         this.number = number;
         int spawnX = startCorner.getBlockX()/2;
         int spawnZ = startCorner.getBlockZ()/2;
-        int spawnY = layerY;
-        this.spawnLocation = new Location(startCorner.getWorld(), spawnX, spawnY, spawnZ);
+        this.spawnLocation = new Location(startCorner.getWorld(), spawnX, layerY, spawnZ);
     }
 
 

@@ -42,8 +42,7 @@ public class Team {
     public String getInfo() {
         StringBuilder info = new StringBuilder();
         info.append(ChatColor.YELLOW + "Slot #")
-                .append(this.slot.getNumber())
-                .append("\n" + ChatColor.GREEN);
+                .append(this.slot.getNumber()).append("\n" + ChatColor.GREEN);
         for (Player p: this.players) {
             info.append(p.getName()).append(",");
         }

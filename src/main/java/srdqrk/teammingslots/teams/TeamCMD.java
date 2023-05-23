@@ -4,20 +4,17 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 
-import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.teams.objects.Team;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @CommandAlias("team|teams|slot|slots|ts")
@@ -39,7 +36,7 @@ public class TeamCMD extends BaseCommand {
         List<String> opciones = new ArrayList<>(List.of("all"));
         List<String> numeros = IntStream.rangeClosed(1, 60)
                 .mapToObj(String::valueOf)
-                .collect(Collectors.toList());
+                .toList();
         opciones.addAll(numeros);
         instance.getCommandManager().getCommandCompletions().registerStaticCompletion("identifiers", opciones);
 
@@ -71,14 +68,6 @@ public class TeamCMD extends BaseCommand {
         List<String> participants = config.getStringList("participantes");
         List<String> noParticipantes = config.getStringList("noParticipantes");
 
-        if (participants == null) {
-            config.set("participantes", new ArrayList<String>());
-        }
-        /*
-        if (noParticipantes == null) {
-            config.set("noParticipantes", new ArrayList<String>());
-        }
-*/
         for (Player player : Bukkit.getOnlinePlayers()) {
             // if not participant or already in participants do nothing
             if (noParticipantes.contains(player.getName()) || participants.contains(player.getName())) {
@@ -99,26 +88,30 @@ public class TeamCMD extends BaseCommand {
     @Subcommand("add")
     @CommandPermission("teammingslots.executer")
     @CommandCompletion("@players @lists")
-    @Description("Elimina un jugador de alguna de la listas de Teamming Slots")
-    public void onAddPlayer(CommandSender sender, Player onlinePlayer, String list) {
-        Player player = onlinePlayer.getPlayer();
-        if (list.equals("NP")) {
-            List<String> noParticipantes = this.config.getStringList("noParticipantes");
-            noParticipantes.add(player.getName());
-            this.config.set("noParticipantes", noParticipantes);
-        } else if (list.equals("participantes")) {
-            List<String> participantes = this.config.getStringList("participantes");
-            participantes.add(player.getName());
-            this.config.set("participantes", participantes);
-        } else {
-            sender.sendMessage(ChatColor.RED + "La lista llamada " + list + " no existe.");
-            return;
+    @Description("Agrega un jugador a una de las listas de Teamming Slots")
+    public void onAddPlayer(CommandSender sender, String playerName, String list) {
+
+        switch (list.toLowerCase()) {
+            case "np" -> {
+                List<String> noParticipantes = this.config.getStringList("noParticipantes");
+                noParticipantes.add(playerName);
+                this.config.set("noParticipantes", noParticipantes);
+            }
+            case "participantes" -> {
+                List<String> participantes = this.config.getStringList("participantes");
+                participantes.add(playerName);
+                this.config.set("participantes", participantes);
+            }
+            default -> {
+                sender.sendMessage(ChatColor.RED + "La lista llamada " + list + " no existe.");
+                return;
+            }
         }
+        // save config
         this.instance.saveConfig();
         // Broadcast to all staffs
-        String log = ChatColor.RED + " El jugador " + player.getName() +
-                " ha sido agregado de la lista " + list;
-        this.instance.logStaff(log);
+        String log = ChatColor.RED + "El jugador " + playerName +
+                " ha sido agregado a la lista " + list;        this.instance.logStaff(log);
     }
     @CommandAlias("remove")
     @Subcommand("remove")
@@ -127,21 +120,25 @@ public class TeamCMD extends BaseCommand {
     @Description("Elimina un jugador de alguna de la listas de Teamming Slots")
     public void onRemovePlayer(CommandSender sender, OnlinePlayer onlinePlayer, @Values("@lists") String list) {
         Player player = onlinePlayer.getPlayer();
-        if (list.equals("NP")) {
-            List<String> noParticipantes = this.config.getStringList("noParticipantes");
-            noParticipantes.remove(player.getName());
-            this.config.set("noParticipantes", noParticipantes);
-        } else if (list.equals("participantes")) {
-            List<String> participantes = this.config.getStringList("participantes");
-            participantes.remove(player.getName());
-            this.config.set("participantes", participantes);
-        } else {
-            sender.sendMessage(ChatColor.RED + "La lista llamada " + list + " no existe.");
-            return;
+        switch (list.toLowerCase()) {
+            case "np" -> {
+                List<String> noParticipantes = this.config.getStringList("noParticipantes");
+                noParticipantes.remove(player.getName());
+                this.config.set("noParticipantes", noParticipantes);
+            }
+            case "participantes" -> {
+                List<String> participantes = this.config.getStringList("participantes");
+                participantes.remove(player.getName());
+                this.config.set("participantes", participantes);
+            }
+            default -> {
+                sender.sendMessage(ChatColor.RED + "La lista llamada " + list + " no existe.");
+                return;
+            }
         }
         this.instance.saveConfig();
         // Broadcast to all staffs
-        String log = ChatColor.RED + " El jugador " + player.getName() +
+        String log = ChatColor.GREEN + " El jugador " + player.getName() +
                 " ha sido eliminado de la lista " + list;
         this.instance.logStaff(log);
     }
@@ -172,16 +169,16 @@ public class TeamCMD extends BaseCommand {
     @CommandPermission("teammingslots.executer")
     @Description("Observar la conformacion de equipos")
     public void onTeamsView(CommandSender sender) {
-        String teamsView = "";
+        StringBuilder teamsView = new StringBuilder();
         if (this.teamManager.getTeams().isEmpty()) {
-            teamsView = ChatColor.RED + "La lista de equipos está vacía";
+            teamsView = new StringBuilder(ChatColor.RED + "La lista de equipos está vacía");
         } else {
             for (Team team : this.teamManager.getTeams()) {
-                teamsView += team.getInfo();
-                teamsView += "\n";
+                teamsView.append(team.getInfo());
+                teamsView.append("\n");
             }
         }
-        sender.sendMessage(teamsView);
+        sender.sendMessage(teamsView.toString());
     }
 
     @CommandAlias("createTeams")
@@ -301,11 +298,11 @@ public class TeamCMD extends BaseCommand {
     @Description("Retorna en chat una lista de los participantes")
     public void onViewParticipants(CommandSender sender) {
         List<String> participants = config.getStringList("participantes");
-        String message = ChatColor.LIGHT_PURPLE + "";
+        StringBuilder message = new StringBuilder(ChatColor.LIGHT_PURPLE + "");
         for (String participantName: participants) {
-            message += participantName + "\n";
+            message.append(participantName).append("\n");
         }
-        sender.sendMessage(message);
+        sender.sendMessage(message.toString());
     }
 
     private Location getLocationFromString(String stringLocation) {

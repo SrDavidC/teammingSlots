@@ -1,7 +1,6 @@
 package srdqrk.teammingslots;
 
 import co.aikar.commands.BukkitCommandManager;
-import co.aikar.commands.CommandCompletionContext;
 import lombok.Getter;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -19,6 +18,7 @@ import srdqrk.teammingslots.teams.TeamCMD;
 import srdqrk.teammingslots.teams.TeamListener;
 import srdqrk.teammingslots.teams.TeamManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +32,7 @@ public final class TeammingSlots extends JavaPlugin {
     MatchManager matchManager;
     @Getter
     Game game;
-    protected static TeammingSlots instance;
+     static TeammingSlots instance;
 
   @Getter
   MiniMessage mm;
@@ -41,28 +41,28 @@ public final class TeammingSlots extends JavaPlugin {
         // Plugin startup logic
       this.instance = this;
 
-        /** Load default config **/
+        /* Load default config **/
         this.loadDefaultConfigFile();
-        this.game = new Game(this, GameStateEnum.LOBBY);
+        this.game = new Game(GameStateEnum.LOBBY);
         this.mm = MiniMessage.miniMessage();
-        /** Managers **/
+        /* Managers **/
         this.teamManager = new TeamManager(this);
         this.commandManager = new BukkitCommandManager(this);
         this.matchManager = new MatchManager(this);
 
-        /** Listeners **/
+        /* Listeners **/
         Bukkit.getPluginManager().registerEvents(new TeamListener(this), this);
         Bukkit.getPluginManager().registerEvents(new MatchListener(this), this);
         this.configFile = this.getConfig();
         // Add default config
         this.configGame();
 
-        /** Commands **/
+        /* Commands **/
         commandManager.registerCommand(new TeamCMD(this));
         commandManager.registerCommand(new MatchCMD(this.matchManager));
         // commandManager.registerCommand(new MinigamesCMD());
 
-        /**Extra **/
+        /* Extra **/
         System.out.println("Teaming Slots loaded");
 
     }
@@ -101,7 +101,7 @@ public final class TeammingSlots extends JavaPlugin {
     public void configGame() {
         List<String> participantes = configFile.getStringList("participantes");
         this.commandManager.getCommandCompletions().registerAsyncCompletion("participants",
-                p -> participantes.stream().collect(Collectors.toList()));
+                p -> new ArrayList<>(participantes));
     }
 
 

@@ -9,7 +9,7 @@ public enum CurrentArena {
   ARENA_5(5);
 
   final int value;
-  private CurrentArena(int value) {
+  CurrentArena(int value) {
     this.value = value;
   }
 }

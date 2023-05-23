@@ -4,7 +4,6 @@ import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
@@ -37,7 +36,6 @@ public class MatchManager {
     this.arenas = new HashMap<>();
     this.playerPairs = new ArrayList<>();
     this.arenasMap = new HashMap<>();
-    World arenasWorld = Bukkit.getWorld("minigames");
     this.actualArena = null;
 
   }
@@ -85,7 +83,8 @@ public class MatchManager {
       Listener listener;
       switch (arena) {
         case ARENA_1 -> {
-          coordsArena = new Location(Bukkit.getWorld(this.arenasWorld),5,-44,0);
+          coordsArena = new Location(Bukkit.getWorld("world"),5,-44,0);
+          // coordsArena = new Location(Bukkit.getWorld(this.arenasWorld),5,-44,0);
           gap = new Vector(25,0,0);
           gapTeam = new Vector(10,0,0);
           arenaID = CurrentArena.ARENA_1;
