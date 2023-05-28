@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import srdqrk.teammingslots.teams.objects.Team;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +46,17 @@ public class MatchPair {
       }
     }
     return null;
+  }
+
+  public ArrayList<Player> getPlayers() {
+    ArrayList<Player> list = new ArrayList<>();
+    if (this.getLeft() != null) {
+      list.addAll(this.getLeft().getPlayers());
+    }
+    if (this.getRight() != null) {
+      list.addAll(this.getRight().getPlayers());
+    }
+    return list;
   }
 
 }

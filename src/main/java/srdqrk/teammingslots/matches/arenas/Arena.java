@@ -11,6 +11,8 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import srdqrk.teammingslots.TeammingSlots;
@@ -88,7 +90,14 @@ public class Arena {
       }
       firstPair_loc.add(gap);
       secondPair_loc.add(gap);
+
+      for (Player player : pair.getPlayers()) {
+        player.setWalkSpeed(0F);
+        PotionEffect effect = new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 128);
+        player.addPotionEffect(effect);
+      }
     }
+
     TeammingSlots.instance().getGame().setGameState(GameStateEnum.STARTING_MATCH);
     return error;
   }
@@ -101,7 +110,13 @@ public class Arena {
     ArenaError error = ArenaError.SUCCESSFUL;
     if (!(this.started)) {
       sendTitleCountdown(5, () -> {
-        // TODO: disable something that players can move
+        // TODO: optimize this method
+        for (MatchPair matchPair : this.pairs) {
+          for (Player player : matchPair.getPlayers()) {
+            player.setWalkSpeed(0.2F);
+            player.removePotionEffect(PotionEffectType.JUMP);
+          }
+        }
         // Initializes their Listeners
         Bukkit.getPluginManager().registerEvents(this.listener, TeammingSlots.instance());
         // Change GameStage to IN_MATCH

@@ -13,14 +13,6 @@ public class Team {
     Location teamLocation;
     Slot slot;
 
-    /*
-    public Team(List<Player> players, Slot slot) {
-        this.players = players;
-        this.slot = slot;
-        this.teamLocation = slot.getSpawnLocation();
-    }
-    */
-
     public Team(List<Player> players) {
         this.players = players;
     }

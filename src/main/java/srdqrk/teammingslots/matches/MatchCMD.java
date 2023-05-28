@@ -36,15 +36,23 @@ public class MatchCMD extends BaseCommand {
   @Description("Retorna todos los jugadores a su posicion de team")
   public void onForceFinish(CommandSender sender) {
     Arena arena = this.matchManager.getActualArena();
-    if (arena != null) {
+    if (arena != null && arena.isStarted()) {
       System.out.println(arena.finish());
       List<String> participants = TeammingSlots.instance().getConfig().getStringList("participantes");
       // clears levitation
       for (String pName: participants) {
-        cleanPlayer(Objects.requireNonNull(Bukkit.getPlayer(pName)));
+        Player player = Bukkit.getPlayer(pName);
+        if (player != null && player.isOnline()) {
+          cleanPlayer(Objects.requireNonNull(Bukkit.getPlayer(pName)));
+        }
       }
     } else {
-      sender.sendMessage(ChatColor.RED +  "No existe una arena actual");
+      if (arena == null) {
+        sender.sendMessage(ChatColor.RED +  "No existe una arena actual. Cree una con /m create <ARENA>");
+      } else if (!(arena.isStarted())) {
+        sender.sendMessage(ChatColor.RED +  "La arena actual no está empezada. Empiecela con /start, espere el contador y luego " +
+                "terminela con /m finish");
+      }
     }
 
   }
@@ -148,15 +156,20 @@ public class MatchCMD extends BaseCommand {
     }
   }
 
-  @Subcommand("test1")
+  @Subcommand("info")
   @CommandPermission("teammingslots.executer")
   public void onTestFunc(Player sender) {
-    MatchPair matchPair = this.matchManager.getPlayerPair(sender);
-    sender.teleport(matchPair.getPlayerSpawnPoint(sender));
+    String m = "";
+    m+= "GameState: " + TeammingSlots.instance().getGame().getGameState();
+    m+= "\nCurrentArena: " + TeammingSlots.instance().getGame().getCurrentArena();
+    m+= "\nCantidad de Equipos:" + TeammingSlots.instance().getTeamManager().getTeams().size();
+    m+= "\nCantidad de Parejas de Equipos: " + TeammingSlots.instance().getMatchManager().getPlayerPairs().size();
+    sender.sendMessage(m);
   }
   private void cleanPlayer(@NonNull Player player) {
     player.removePotionEffect(PotionEffectType.LEVITATION);
   }
+
 
 
 }

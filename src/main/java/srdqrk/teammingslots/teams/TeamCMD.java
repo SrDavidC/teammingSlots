@@ -49,12 +49,6 @@ public class TeamCMD extends BaseCommand {
         this.createTeams(sender, teamSize);
         this.onTeletransportTeam(sender,"own", "all");
 
-        this.instance.getMatchManager().getArenas().put(1,new Location(Bukkit.getWorld("minigames"),-45,17,0));
-        this.instance.getMatchManager().getArenas().put(2,new Location(Bukkit.getWorld("minigames"),200,100,0));
-        this.instance.getMatchManager().getArenas().put(3,new Location(Bukkit.getWorld("minigames"),300,100,0));
-        this.instance.getMatchManager().getArenas().put(4,new Location(Bukkit.getWorld("minigames"),400,100,0));
-        this.instance.getMatchManager().getArenas().put(5,new Location(Bukkit.getWorld("minigames"),500,100,0));
-        this.instance.getMatchManager().getArenas().put(6,new Location(Bukkit.getWorld("minigames"),600,100,0));
     }
 
     @CommandAlias("loadParticipants")
@@ -65,17 +59,20 @@ public class TeamCMD extends BaseCommand {
             sender.sendMessage(ChatColor.RED + "No tienes permiso para ejecutar este comando");
             return;
         }
+
         List<String> participants = config.getStringList("participantes");
-        List<String> noParticipantes = config.getStringList("noParticipantes");
+        List<String> noParticipants = config.getStringList("noParticipantes");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            // if not participant or already in participants do nothing
-            if (noParticipantes.contains(player.getName()) || participants.contains(player.getName())) {
+            String playerName = player.getName();
+
+            // Skip if player is in noParticipants or already in participants
+            if (noParticipants.contains(playerName) || participants.contains(playerName)) {
                 continue;
             }
 
-            participants.add(player.getName());
-            sender.sendMessage(ChatColor.GREEN + "Se ha agregado a " + player.getName() + " a la lista de participantes");
+            participants.add(playerName);
+            sender.sendMessage(ChatColor.GREEN + "Se ha agregado a " + playerName + " a la lista de participantes");
         }
 
         config.set("participantes", participants);
@@ -84,6 +81,7 @@ public class TeamCMD extends BaseCommand {
         String log = ChatColor.GREEN + "Se han agregado a todos los jugadores elegibles a la lista de participantes";
         this.instance.logStaff(log);
     }
+
     @CommandAlias("add")
     @Subcommand("add")
     @CommandPermission("teammingslots.executer")

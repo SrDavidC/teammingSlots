@@ -63,7 +63,8 @@ public final class TeammingSlots extends JavaPlugin {
         // commandManager.registerCommand(new MinigamesCMD());
 
         /* Extra **/
-        System.out.println("Teaming Slots loaded");
+        // System.out.println("Teaming Slots loaded");
+      getLogger().info(ChatColor.GOLD + "Teamming Slots is on fireee!");
 
     }
 

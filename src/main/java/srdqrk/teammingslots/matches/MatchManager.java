@@ -22,7 +22,6 @@ import java.util.*;
 public class MatchManager {
   final String arenasWorld = "minigames";
   TeamManager teamManager;
-  Map<Integer, Location> arenas;
   List<MatchPair> playerPairs;
 
   TeammingSlots instance;
@@ -33,7 +32,6 @@ public class MatchManager {
     this.instance = instance;
 
     this.teamManager = TeammingSlots.instance().getTeamManager();
-    this.arenas = new HashMap<>();
     this.playerPairs = new ArrayList<>();
     this.arenasMap = new HashMap<>();
     this.actualArena = null;
@@ -104,7 +102,8 @@ public class MatchManager {
           gap = new Vector(25,0,0);
           gapTeam = new Vector(10,0,0);
           arenaID = CurrentArena.ARENA_3;
-          listener = new XPListener(0.05f,0.07f, arenasWorld);
+          // listener = new XPListener(0.05f,0.07f, arenasWorld);
+          listener = new ExampleListener("Arena 4");
           this.actualArena = new Arena(pairs,coordsArena,gap, gapTeam,arenaID,listener);
         }
         case ARENA_4 -> {
