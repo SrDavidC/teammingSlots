@@ -30,6 +30,7 @@ public class TeamManager {
   FileConfiguration config;
   Location startCorner;
   private List<String> hoyos;
+  private List<Integer> bannedSlots;
 
   public TeamManager(TeammingSlots instance) {
     this.teams = new ArrayList<>();
@@ -40,6 +41,15 @@ public class TeamManager {
     hoyos.add("hoyo_1");
     hoyos.add("hoyo_2");
     hoyos.add("hoyo_3");
+    this.bannedSlots = new ArrayList<>();
+    bannedSlots.add(1);
+    bannedSlots.add(2);
+    bannedSlots.add(37);
+    bannedSlots.add(38);
+    bannedSlots.add(68);
+    bannedSlots.add(69);
+    bannedSlots.add(70);
+
     createSlots(MAX_SLOTS);
   }
 
@@ -103,7 +113,11 @@ public class TeamManager {
     Location startCorner = loadStartCorner(this.hoyos.get(holeIndex));
 
     for (int slotCounter = 0; slotCounter < maxSlots; slotCounter++) {
-      Slot newSlot = new Slot(startCorner, (slotCounter + 1), (startCorner.getBlockY() - (Y_MEASURE * slotCounter)));
+      int slotNumber = (slotCounter + 1);
+      if (bannedSlots.contains(slotNumber)) {
+        continue;
+      }
+      Slot newSlot = new Slot(startCorner, slotNumber, (startCorner.getBlockY() - (Y_MEASURE * slotCounter)));
       this.slots.add(newSlot);
 
       if (slotCounter % 37 == 0 && holeIndex < 2) {

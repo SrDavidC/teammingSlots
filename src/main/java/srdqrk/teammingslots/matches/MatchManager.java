@@ -11,7 +11,6 @@ import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.game.CurrentArena;
 import srdqrk.teammingslots.matches.arenas.Arena;
 import srdqrk.teammingslots.matches.listeners.ExampleListener;
-import srdqrk.teammingslots.matches.listeners.XPListener;
 import srdqrk.teammingslots.teams.TeamManager;
 import srdqrk.teammingslots.teams.objects.Team;
 

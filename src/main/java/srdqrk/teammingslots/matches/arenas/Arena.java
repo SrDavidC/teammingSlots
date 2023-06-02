@@ -111,6 +111,8 @@ public class Arena {
     if (!(this.started)) {
       sendTitleCountdown(5, () -> {
         // TODO: optimize this method
+        // is it really important? That have complex O(n)
+        // because in depth, is just for each participant
         for (MatchPair matchPair : this.pairs) {
           for (Player player : matchPair.getPlayers()) {
             player.setWalkSpeed(0.2F);

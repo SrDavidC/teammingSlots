@@ -46,6 +46,7 @@ public class MatchCMD extends BaseCommand {
           cleanPlayer(Objects.requireNonNull(Bukkit.getPlayer(pName)));
         }
       }
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "i disable " + false);
     } else {
       if (arena == null) {
         sender.sendMessage(ChatColor.RED +  "No existe una arena actual. Cree una con /m create <ARENA>");
@@ -116,6 +117,7 @@ public class MatchCMD extends BaseCommand {
       this.matchManager.createArena(arenaNumber);
       TeammingSlots.instance().logStaff("Se ha creado una instancia de Arena: " + arenaNumber);
       this.matchManager.getActualArena().setup();
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "i disable " + true);
 
     } else {
       sender.sendMessage(ChatColor.RED +  "Ya existe una arena creada. La arena es " +
