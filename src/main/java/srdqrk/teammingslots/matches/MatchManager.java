@@ -80,7 +80,7 @@ public class MatchManager {
       Listener listener;
       switch (arena) {
         case ARENA_1 -> {
-          coordsArena = new Location(Bukkit.getWorld("world"),5,-44,0);
+          coordsArena = new Location(Bukkit.getWorld(this.arenasWorld),5,-47,0);
           // coordsArena = new Location(Bukkit.getWorld(this.arenasWorld),5,-44,0);
           gap = new Vector(25,0,0);
           gapTeam = new Vector(10,0,0);

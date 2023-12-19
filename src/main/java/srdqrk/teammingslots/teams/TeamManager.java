@@ -110,31 +110,51 @@ public class TeamManager {
 
   public void createSlots(int maxSlots) {
     int holeIndex = 0;
+    int slotProgressedInHole = 0;
     Location startCorner = loadStartCorner(this.hoyos.get(holeIndex));
 
     for (int slotCounter = 0; slotCounter < maxSlots; slotCounter++) {
       int slotNumber = (slotCounter + 1);
-      if (bannedSlots.contains(slotNumber)) {
-        continue;
-      }
-      Slot newSlot = new Slot(startCorner, slotNumber, (startCorner.getBlockY() - (Y_MEASURE * slotCounter)));
-      this.slots.add(newSlot);
-
-      if (slotCounter % 37 == 0 && holeIndex < 2) {
+      System.out.println("[!!!] Slot counter: " + slotCounter);
+      if (slotCounter != 0 &&  slotCounter % 37 == 0 && holeIndex < 2) {
+        System.out.println("slot counter %37 or hole idex more than 2");
         holeIndex++;
         // Update startCorner to the next hole's start corner
         startCorner = loadStartCorner(this.hoyos.get(holeIndex));
+        System.out.println(holeIndex);
+        System.out.println("Valor nuevo asignado a start corner: " + startCorner);
+
+        slotProgressedInHole = 0;
       }
+      slotProgressedInHole++;
+      if (bannedSlots.contains(slotNumber)) {
+        continue;
+      }
+      System.out.println("Progressed: " + slotProgressedInHole);
+      int yLayer = (startCorner.getBlockY() - (Y_MEASURE * slotProgressedInHole));
+      System.out.println("Y Layer : " + yLayer);
+      Slot newSlot = new Slot(startCorner, slotNumber, yLayer);
+      this.slots.add(newSlot);
+
+      System.out.println("[!!!] Start corner: X: " + startCorner.getBlockX() + " Y:" + yLayer + " Z: " +  startCorner.getBlockZ() );
+      System.out.println("[!!!] Hole Index " + holeIndex);
     }
   }
 
   public Location loadStartCorner(String hoyo_name) {
-    double x = config.getDouble(hoyo_name + ".x");
+    System.out.println("Load Start corner: " + hoyo_name);
+    System.out.println("Load Start corner: " + config.getDouble(hoyo_name + ".x"));
+    System.out.println("Load Start corner: " + config.getDouble(hoyo_name + ".y"));
+    System.out.println("Load Start corner: " + config.getDouble(hoyo_name + ".z"));
+
+    double x = config.getDouble(hoyo_name + ".x") - 14d;
     double y = config.getDouble(hoyo_name + ".y");
-    double z = config.getDouble(hoyo_name + ".z");
+    double z = config.getDouble(hoyo_name + ".z")- 12.5d;
     String worldName = config.getString(hoyo_name + ".world");
     World world = Bukkit.getWorld(worldName);
-    return new Location(world, x, y, z);
+    Location l = new Location(world, x, y, z, 90f, 0);
+    System.out.println(" New location calculated: " + l);
+    return l.clone();
   }
 
   public void deleteTeams() {

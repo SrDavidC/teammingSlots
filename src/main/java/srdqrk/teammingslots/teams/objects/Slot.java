@@ -23,8 +23,8 @@ public class Slot {
         this.finishCorner = new Location(startCorner.getWorld(), startCorner.getX() + X_MEASURE, startCorner.getY()
                 , startCorner.getZ() + Z_HOLE_MEASURE);
         this.number = number;
-        int spawnX = startCorner.getBlockX()/2;
-        int spawnZ = startCorner.getBlockZ()/2;
+        int spawnX = startCorner.getBlockX();
+        int spawnZ = startCorner.getBlockZ();
         this.spawnLocation = new Location(startCorner.getWorld(), spawnX, layerY, spawnZ);
     }
 
