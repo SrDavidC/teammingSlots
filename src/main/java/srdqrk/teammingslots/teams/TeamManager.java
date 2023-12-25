@@ -116,7 +116,6 @@ public class TeamManager {
     Location startCorner = loadStartCorner(this.hoyos.get(holeIndex));
 
     for (int slotCounter = 1; slotCounter < maxSlots; slotCounter++) {
-      int slotNumber = slotCounter;
       System.out.println("[!!!] Slot counter: " + slotCounter);
 
       // Verificar si se ha completado un ciclo completo de hoyos (37 slots cada uno)
@@ -132,7 +131,7 @@ public class TeamManager {
         slotProgressedInHole = 0;
       }
       // Omitir los slots prohibidos
-      if (bannedSlots.contains(slotNumber)) {
+      if (bannedSlots.contains(slotCounter)) {
         slotProgressedInHole++;
         System.out.println("Slot no valido, se salta: Slot # " + slotCounter);
         continue;
@@ -143,7 +142,7 @@ public class TeamManager {
       System.out.println("Y Layer: " + yLayer);
 
       // Crear un nuevo Slot y agregarlo a la lista
-      Slot newSlot = new Slot(startCorner, slotNumber, yLayer);
+      Slot newSlot = new Slot(startCorner, slotCounter, yLayer);
       this.slots.add(newSlot);
 
       slotProgressedInHole++;
@@ -165,6 +164,7 @@ public class TeamManager {
     double y = config.getDouble(hoyo_name + ".y");
     double z = config.getDouble(hoyo_name + ".z")- 12.5d;
     String worldName = config.getString(hoyo_name + ".world");
+    assert worldName != null;
     World world = Bukkit.getWorld(worldName);
     Location l = new Location(world, x, y, z, 90f, 0);
     System.out.println(" New location calculated: " + l);
