@@ -4,6 +4,7 @@ import lombok.Data;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import srdqrk.teammingslots.utils.Utils;
 
 import java.util.List;
 @Data
@@ -19,6 +20,7 @@ public class Team {
 
     public void teleportTeam(Location location) {
         for (Player player: this.players) {
+            Utils.sendTeleportTitle(player);
             player.teleport(location);
         }
     }
