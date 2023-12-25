@@ -10,7 +10,7 @@ public class Utils {
   public static final String TELEPORT_ASCII = "\uE001";
 
   public static void sendTeleportTitle(Player player) {
-    player.sendTitle(ChatColor.WHITE + TELEPORT_ASCII, "", 20, 40, 20);
+    player.sendTitle(ChatColor.WHITE + TELEPORT_ASCII, "", 3, 10, 15);
     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20,1));
   }
   public static void sendTitleToAll() {
