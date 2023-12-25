@@ -111,35 +111,49 @@ public class TeamManager {
   public void createSlots(int maxSlots) {
     int holeIndex = 0;
     int slotProgressedInHole = 0;
+
+    // Obtener la esquina de inicio del primer hoyo
     Location startCorner = loadStartCorner(this.hoyos.get(holeIndex));
 
-    for (int slotCounter = 0; slotCounter < maxSlots; slotCounter++) {
-      int slotNumber = (slotCounter + 1);
+    for (int slotCounter = 1; slotCounter < maxSlots; slotCounter++) {
+      int slotNumber = slotCounter;
       System.out.println("[!!!] Slot counter: " + slotCounter);
-      if (slotCounter != 0 &&  slotCounter % 37 == 0 && holeIndex < 2) {
-        System.out.println("slot counter %37 or hole idex more than 2");
+
+      // Verificar si se ha completado un ciclo completo de hoyos (37 slots cada uno)
+      if (slotCounter > 2 && slotCounter % 37 == 0 && holeIndex < 2) {
+        System.out.println("Slot counter % 37 or hole index more than 2");
         holeIndex++;
-        // Update startCorner to the next hole's start corner
+
+        // Actualizar startCorner a la esquina de inicio del próximo hoyo
         startCorner = loadStartCorner(this.hoyos.get(holeIndex));
-        System.out.println(holeIndex);
-        System.out.println("Valor nuevo asignado a start corner: " + startCorner);
+        System.out.println("Hole index: " + holeIndex);
+        System.out.println("Nuevo valor asignado a start corner: " + startCorner);
 
         slotProgressedInHole = 0;
       }
-      slotProgressedInHole++;
+      // Omitir los slots prohibidos
       if (bannedSlots.contains(slotNumber)) {
+        slotProgressedInHole++;
+        System.out.println("Slot no valido, se salta: Slot # " + slotCounter);
         continue;
       }
-      System.out.println("Progressed: " + slotProgressedInHole);
-      int yLayer = (startCorner.getBlockY() - (Y_MEASURE * slotProgressedInHole));
-      System.out.println("Y Layer : " + yLayer);
+
+      System.out.println("Progresado: " + slotProgressedInHole);
+      int yLayer = startCorner.getBlockY() - (Y_MEASURE * slotProgressedInHole);
+      System.out.println("Y Layer: " + yLayer);
+
+      // Crear un nuevo Slot y agregarlo a la lista
       Slot newSlot = new Slot(startCorner, slotNumber, yLayer);
       this.slots.add(newSlot);
 
-      System.out.println("[!!!] Start corner: X: " + startCorner.getBlockX() + " Y:" + yLayer + " Z: " +  startCorner.getBlockZ() );
-      System.out.println("[!!!] Hole Index " + holeIndex);
+      slotProgressedInHole++;
+
+      System.out.println("[!!!] Start corner: X: " + startCorner.getBlockX() + " Y: " + yLayer + " Z: " + startCorner.getBlockZ());
+      System.out.println("[!!!] Hole Index: " + holeIndex);
+
     }
   }
+
 
   public Location loadStartCorner(String hoyo_name) {
     System.out.println("Load Start corner: " + hoyo_name);
