@@ -12,6 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.teams.objects.Team;
+import srdqrk.teammingslots.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -267,6 +268,7 @@ public class TeamCMD extends BaseCommand {
                     teleportLocation = getLocationFromString(location);
                     for (Player player : team.getPlayers()) {
                         player.teleport(teleportLocation);
+                        Utils.sendTeleportTitle(player);
                     }
                 }
             }
@@ -283,6 +285,7 @@ public class TeamCMD extends BaseCommand {
         Team playerSrchdTeam = this.teamManager.getPlayerTeam(playerSearched.getPlayer());
         if (playerSrchdTeam != null) {
             playerSearched.getPlayer().teleport(playerSrchdTeam.getTeamLocation());
+            Utils.sendTeleportTitle(playerSearched.getPlayer());
             String log = ChatColor.GREEN + playerSearched.getPlayer().getName() + " ha sido teletransportado";
             this.instance.logStaff(log);
         } else {
