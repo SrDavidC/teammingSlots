@@ -63,7 +63,7 @@ public class MatchCMD extends BaseCommand {
     } else {
       if (arena == null) {
         sender.sendMessage(ChatColor.RED +  "No existe una arena actual. Cree una con /m create <ARENA>");
-      } else if (!(arena.isStarted())) {
+      } else {
         sender.sendMessage(ChatColor.RED +  "La arena actual no está empezada. Empiecela con /start, espere el contador y luego " +
                 "terminela con /m finish");
       }

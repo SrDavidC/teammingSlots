@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ArenaXP extends Arena {
 
-  private int decreaseIntervalTicks = 20;
+  final private int decreaseIntervalTicks = 20;
   private @Getter
   @Setter int decreasePeriod = 7;
   private @Getter

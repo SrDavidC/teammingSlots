@@ -77,18 +77,12 @@ public class MatchListener implements Listener {
       if (participants.contains(playerName)) {
         Location from = e.getFrom();
         Location to = e.getTo();
-
-        // Comprueba si solo ha cambiado la posición en Y
         if (from.getBlockY() != to.getBlockY()) {
           return;
         }
-        // Comprueba si solo ha cambiado la dirección de la vista
-
         if (from.getYaw() != to.getYaw() || from.getPitch() != to.getPitch()) {
           return;
         }
-
-        // Permite el movimiento si no se cumple ninguna de las condiciones anteriores
         e.setCancelled(true);
       }
     }
