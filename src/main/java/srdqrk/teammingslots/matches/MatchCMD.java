@@ -9,12 +9,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import srdqrk.teammingslots.TeammingSlots;
 import srdqrk.teammingslots.game.CurrentArena;
 import srdqrk.teammingslots.matches.arenas.Arena;
 import srdqrk.teammingslots.matches.arenas.ArenaError;
 import srdqrk.teammingslots.teams.objects.Team;
+import srdqrk.teammingslots.utils.Utils;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,17 +35,7 @@ public class MatchCMD extends BaseCommand {
 
 
 
-  public void sendTitleToAll(String title, String subtitle) {
-    if (subtitle == null)
-      subtitle = "";
 
-    if (title == null)
-      title = "";
-
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      player.sendTitle(ChatColor.RED + "" + ChatColor.BOLD + title, subtitle, 10, 30, 10);
-    }
-  }
 
   public void clearEffectsOnPlayer() {
     List<String> participants = TeammingSlots.instance().getConfig().getStringList("participantes");
@@ -67,7 +59,7 @@ public class MatchCMD extends BaseCommand {
       // clears levitation
       clearEffectsOnPlayer();
       // Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "i disable " + false);
-      sendTitleToAll("¡Arena finalizada!", "");
+      Utils.sendTitleToAll();
     } else {
       if (arena == null) {
         sender.sendMessage(ChatColor.RED +  "No existe una arena actual. Cree una con /m create <ARENA>");
@@ -102,7 +94,6 @@ public class MatchCMD extends BaseCommand {
     if (arena != null) {
       if (arena.isStarted()) {
         System.out.println(arena.stop());
-        sendTitleToAll("¡La arena ha sido pausada!", "");
       } else {
         sender.sendMessage(ChatColor.RED +  "La arena actual no ha empezado. Utiliza /m start para empezarla");
       }
@@ -119,7 +110,6 @@ public class MatchCMD extends BaseCommand {
     if (arena != null) {
       if (arena.isStarted()) {
         System.out.println(arena.resume());
-        sendTitleToAll("¡La arena ha sido reanudada!", "");
       } else {
         sender.sendMessage(ChatColor.RED +  "La arena actual no ha empezado. Utiliza /m start para empezarla");
       }
@@ -141,7 +131,7 @@ public class MatchCMD extends BaseCommand {
       TeammingSlots.instance().logStaff("Se ha creado una instancia de Arena: " + arenaNumber);
       this.matchManager.getActualArena().setup();
       // Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "i disable " + true);
-      sendTitleToAll("Minijuego " + arenaNumber, "Has sido teletransportado a un minijuego");
+      Utils.sendTitleToAll();
     } else {
       sender.sendMessage(ChatColor.RED +  "Ya existe una arena creada. La arena es " +
               matchManager.getActualArena().id + "\nEliminela ejecutando /match finish");
@@ -166,6 +156,7 @@ public class MatchCMD extends BaseCommand {
         t1.teleportTeamToOwnLocation();
         for (Player p: t1.getPlayers()) {
           cleanPlayer(p);
+          Utils.sendTeleportTitle(p);
         }
       }
 
@@ -173,6 +164,7 @@ public class MatchCMD extends BaseCommand {
         t2.teleportTeamToOwnLocation();
         for (Player p: t2.getPlayers()) {
           cleanPlayer(p);
+          Utils.sendTeleportTitle(p);
         }
       }
       this.matchManager.playerPairs.remove(matchPair);
@@ -192,7 +184,13 @@ public class MatchCMD extends BaseCommand {
     sender.sendMessage(m);
   }
   private void cleanPlayer(@NonNull Player player) {
-    player.removePotionEffect(PotionEffectType.LEVITATION);
+    for (PotionEffect activeEffect : player.getActivePotionEffects()) {
+      PotionEffectType type = activeEffect.getType();
+
+      if (type != PotionEffectType.NIGHT_VISION) {
+        player.removePotionEffect(type);
+      }
+    }
   }
 
 
